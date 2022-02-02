@@ -218,7 +218,7 @@ radiate <- function(pop.xy, pars){
                                    pars$site.ach)]
       hit.sites <- sample(x=hit.sites, size = hit.indiv[i])
       for(j in 1:hit.indiv[i]){
-        pop.xy[[i]][sample(x=0:1, 1), hit.sites[j]] <- 1+sample(pars$dfe, 1)
+        pop.xy[[i]][sample(x=1:2, 1), hit.sites[j]] <- 1+sample(pars$dfe, 1)
       }
     }
   }
