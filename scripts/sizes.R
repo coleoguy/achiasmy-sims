@@ -28,8 +28,8 @@
 
 
 # variables
-# s: the selection coefficient for SA
-# dfe: vector of slection coefficients for general fitness loci
+# s: the selection coefficient for SA .5
+# dfe: vector of selection coefficients for general fitness loci
 # gen: number of generations to run
 # iter: number of trials to use
 # 
@@ -43,7 +43,11 @@
 # 4 make gametes
 
 # 5 lay down mutations
-
+dfe <- rgamma(5000, shape = .28, scale=113)
+# values less than -1 are not meaningful
+dfe[dfe>1] <- 1
+dfe <- 1-dfe
+hist(dfe)
 # 6 make next gen
 
 # 7 return to step 2
