@@ -43,7 +43,7 @@ GetPop <- function(N){
     pop[[i]] <- matrix(rep(1, 200), nrow = 2, ncol = 100)
     # Set each SDL to 1 or 0 with prob of 0.5, because 50% chance of being male
     # or female, but make it impossible to have 2 Y chromosomes
-    pop[[i]][1,13] <- 1
+    pop[[i]][1,13] <- 0
     pop[[i]][2,13] <- sample(0:1, size = 1, replace = F, prob = rep(0.5,2))
     # TODO Should SAL have equal probability of being male or female benefit?
     pop[[i]][,36] <- sample(0:1, size = 2, replace = T, prob = rep(0.5,2))
@@ -54,8 +54,7 @@ GetPop <- function(N){
 
 # 2 assess fitness
 # pop = list of genomes from GetPop()
-# s36 = selection coefficient on sexually-antagonistic locus at 36
-# s61 = selection coefficient on sexually-antagonistic locus at 61
+# s = selection coefficient on sexually-antagonistic loci
 GetFit <- function(pop, s){
   # Initialize a vector of fitness values for all individuals in the population
   pop_fits <- vector(mode = "numeric", length = length(pop))
@@ -149,25 +148,27 @@ ActofGod <- function(pop, dfe){
 }
 
 # 3 pick parents
-GetParents <- function(pop, fits, N = length(pop)){
-  sexes <- rep("fem",length(pop))
-  for(i in 1:N){
+# N = Total number of COUPLES/individuals to contribute to next generation
+Maury <- function(pop, fits, N = length(pop)){
+  sexes <- rep("fem",N)
+  for(i in 1:length(sexes)){
     if(pop[[i]][2,13]){
       sexes[i] <- "mal"
     }
   }
   moms <- sample((1:N)[sexes=="fem"], prob=fits[sexes=="fem"], 
-                 size=length(pop)/2, replace = T)
+                 size=N, replace = T)
   dads <- sample((1:N)[sexes=="mal"], prob=fits[sexes=="mal"], 
-                 size=length(pop)/2, replace = T)
+                 size=N, replace = T)
   parents <- list(moms,dads)
   names(parents) <- c("Moms","Dads")
   return(parents)
 }
+
 # 4 make gametes
 # pop = list of genomes
-# parent = list of two sets of integers describing the individuals who get to 
-# breed
+# parent = list of two sets of integers describing the individuals in pop who 
+# get to breed
 # PARb = Starting locus of pseudoautosomal region of the male sex chromosomes
 # Output (gametes) = list of two sets of vectors each describing the sequence
 # of a haploid gamete
@@ -198,23 +199,23 @@ MakeGametes <- function(pop, parents, PARb){
       # from which gametes will be selected
       SexChrGametes <- c(
         paste(c(pop[[parents$Dads[i]]][2,1:(SexRec-1)], 
-                pop[[parents$Dads[i]]][1,SexRec:25]), collapse = ""),
+                pop[[parents$Dads[i]]][1,SexRec:25]), collapse = ","),
         paste(c(pop[[parents$Dads[i]]][1,1:(SexRec-1)], 
-                pop[[parents$Dads[i]]][2,SexRec:25]), collapse = "")
+                pop[[parents$Dads[i]]][2,SexRec:25]), collapse = ",")
       )
       
       Chr1Gametes <- c(
         paste(c(pop[[parents$Dads[i]]][2,26:(Chr1Rec-1)], 
-                pop[[parents$Dads[i]]][1,Chr1Rec:50]), collapse = ""),
+                pop[[parents$Dads[i]]][1,Chr1Rec:50]), collapse = ","),
         paste(c(pop[[parents$Dads[i]]][1,26:(Chr1Rec-1)], 
-                pop[[parents$Dads[i]]][2,Chr1Rec:50]), collapse = "")
+                pop[[parents$Dads[i]]][2,Chr1Rec:50]), collapse = ",")
       )
       
       Chr2Gametes <- c(
         paste(c(pop[[parents$Dads[i]]][2,51:(Chr2Rec-1)], 
-                pop[[parents$Dads[i]]][1,Chr2Rec:100]), collapse = ""),
+                pop[[parents$Dads[i]]][1,Chr2Rec:100]), collapse = ","),
         paste(c(pop[[parents$Dads[i]]][1,51:(Chr2Rec-1)], 
-                pop[[parents$Dads[i]]][2,Chr2Rec:100]), collapse = "")
+                pop[[parents$Dads[i]]][2,Chr2Rec:100]), collapse = ",")
       )
       
       # For each chromosome, randomly select ONE homolog from the two 
@@ -222,7 +223,7 @@ MakeGametes <- function(pop, parents, PARb){
       # haploid genome, adding this genome to the list of gametes under "sperm"
       gametes$sperm[i] <- paste(c(sample(SexChrGametes, 1),
                                   sample(Chr1Gametes, 1),
-                                  sample(Chr2Gametes, 1)), collapse = "")
+                                  sample(Chr2Gametes, 1)), collapse = ",")
     }
   # For female..
     # Pick 3 random sites OTHER than 13, 36, and 61 in...
@@ -239,30 +240,30 @@ MakeGametes <- function(pop, parents, PARb){
     # from which gametes will be selected
     SexChrGametes <- c(
       paste(c(pop[[parents$Moms[i]]][2,1:(SexRec-1)], 
-              pop[[parents$Moms[i]]][1,SexRec:25]), collapse = ""),
+              pop[[parents$Moms[i]]][1,SexRec:25]), collapse = ","),
       paste(c(pop[[parents$Moms[i]]][1,1:(SexRec-1)], 
-              pop[[parents$Moms[i]]][2,SexRec:25]), collapse = "")
+              pop[[parents$Moms[i]]][2,SexRec:25]), collapse = ",")
     )
     
     Chr1Gametes <- c(
       paste(c(pop[[parents$Moms[i]]][2,26:(Chr1Rec-1)], 
-              pop[[parents$Moms[i]]][1,Chr1Rec:50]), collapse = ""),
+              pop[[parents$Moms[i]]][1,Chr1Rec:50]), collapse = ","),
       paste(c(pop[[parents$Moms[i]]][1,26:(Chr1Rec-1)], 
-              pop[[parents$Moms[i]]][2,Chr1Rec:50]), collapse = "")
+              pop[[parents$Moms[i]]][2,Chr1Rec:50]), collapse = ",")
     )
     
     Chr2Gametes <- c(
       paste(c(pop[[parents$Moms[i]]][2,51:(Chr2Rec-1)], 
-              pop[[parents$Moms[i]]][1,Chr2Rec:100]), collapse = ""),
+              pop[[parents$Moms[i]]][1,Chr2Rec:100]), collapse = ","),
       paste(c(pop[[parents$Moms[i]]][1,51:(Chr2Rec-1)], 
-              pop[[parents$Moms[i]]][2,Chr2Rec:100]), collapse = "")
+              pop[[parents$Moms[i]]][2,Chr2Rec:100]), collapse = ",")
     )
     # For each chromosome, randomly select one homolog from the two 
     # recombinant homologs and stick these chromosomes together to create a
     # haploid genome, adding this genome to the list of gametes under "eggs"
     gametes$eggs[i] <- paste(c(sample(SexChrGametes, 1),
                                 sample(Chr1Gametes, 1),
-                                sample(Chr2Gametes, 1)), collapse = "")
+                                sample(Chr2Gametes, 1)), collapse = ",")
   }
   
   # Return list of eggs and sperm
@@ -270,9 +271,66 @@ MakeGametes <- function(pop, parents, PARb){
 }
 
 # 7 make next gen
-# gametes = List of two vectors describing the haplotypes of available eggs and
-# sperm
+# gametes = List of strings describing the haplotypes of available eggs and
+# sperm where each locus' fitness value is separated by a comma
+# newgen = List of matrices describing each of the new individuals
+MiracleOfLife <- function(gametes){
+  # New generation should be same size as number of couples
+  newgen <- vector(mode = "list", length = length(gametes$eggs))
+  
+  # Until list of gametes is empty, sample a new mom and dad gamete and fuse
+  # together into a 2X100 matrix, adding to population
+  for(i in 1:length(newgen)){
+    # pick a mom and dad at random from the mating pool
+    e <- sample(1:length(gametes$eggs), 1)
+    s <- sample(1:length(gametes$sperm), 1)
+    
+    # sex
+    newgen[[i]] <- matrix(as.numeric(c(strsplit(gametes$eggs[e], ",")[[1]],
+                                       strsplit(gametes$sperm[s], ",")[[1]])),
+                                     nrow = 2, byrow = T)
+    gametes$eggs <- gametes$eggs[-e]
+    gametes$sperm <- gametes$sperm[-s]
+  }
+  
+  return(newgen)
+}
 
 # 8 return to step 2
+
+# Runs the simulation on "pop_size" number of individuals for "gen_no" 
+# generations with an SAL selection coefficient of "s" and a PAR beginning locus
+# of "PARb" and output the final population
+Evolve <- function(pop_size, gen_no, s, PARb){
+  # Get a new population
+  pop <- GetPop(pop_size)
+  
+  # Get a distribution of fitness effects
+  dfe <- GetDFE()
+  
+  # For each generation in "gen_no"...
+  for(gen in 1:gen_no){
+    # Mutate the starting population
+    pop <- ActofGod(pop, dfe)
+    
+    # Assess the fitness of the mutated population
+    fits <- GetFit(pop, s)
+    
+    # Select parents based on the fitness
+    parents <- Maury(pop, fits, length(pop))
+    
+    # Select gametes from these parents
+    gametes <- MakeGametes(pop, parents, PARb)
+    
+    # Breed the parents
+    pop <- MiracleOfLife(gametes)
+    
+    # Continue to next round of mutation
+    next
+  }
+  
+  # Output final genome after this many generations
+  return(pop)
+}
 
 
