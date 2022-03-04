@@ -5,8 +5,7 @@
 # SA loci
 
 #  sex chromosome         autosome 1         autosome 2
-#  1-12(PAR) SDL 14-25    26-35 SA 37-50     51-60 SA 62-100
-#
+#  1-12 SDL (PAR)14-25    26-35 SA 37-50     51-60 SA 62-100
 
 # SDL 0=X 1=Y
 # SA 0=female benefit; 1=male benefit
@@ -45,6 +44,8 @@ GetPop <- function(N){
     # or female, but make it impossible to have 2 Y chromosomes
     pop[[i]][1,13] <- 0
     pop[[i]][2,13] <- sample(0:1, size = 1, replace = F, prob = rep(0.5,2))
+    # Start each individual with NO sex chr-autosome fusions
+    pop[[i]][,25] <- 0
     # TODO Should SAL have equal probability of being male or female benefit?
     pop[[i]][,36] <- sample(0:1, size = 2, replace = T, prob = rep(0.5,2))
     pop[[i]][,61] <- sample(0:1, size = 2, replace = T, prob = rep(0.5,2))
@@ -63,7 +64,7 @@ GetFit <- function(pop, s){
   for(i in 1:length(pop)){
     # Create a vector of averaged fitness values of ALL homologous loci, 
     # excluding the SDL and SAL
-    locus_fits <- colSums(pop[[i]][,-c(13,36,61)])/2
+    locus_fits <- colSums(pop[[i]][,-c(13,25,36,61)])/2
     
     # If the individual is a male...
     if(1 %in% pop[[i]][,13]){
@@ -109,9 +110,6 @@ GetFit <- function(pop, s){
   return(pop_fits)
 }
 
-# TODO Do we want to sample from a new gamma distribution each time a mutation
-# occurs, or store a constant gamma distribution (as I have here) and keep
-# drawing new numbers from it?
 # 5 get a store distribution of fitness effects
 GetDFE <- function(){
   dfe <- rgamma(5000, shape = .28, scale=113)
@@ -134,20 +132,30 @@ ActofGod <- function(pop, dfe){
   
   # Iterate through each individual
   for(i in 1:length(pop)){
+    # TODO Currently, fused chromosomes cannot unfuse. Should I make it possible
+    # unfuse the chromosomes?
+    # 10% chance of fusion of either type
+    if(pop[[i]][1, 25] == 0){
+      pop[[i]][1, 25] <- sample(0:2, size = 1, replace = T, prob = c(0.8,0.1,0.1))
+    }
+    if(pop[[i]][2, 25] == 0){
+      pop[[i]][2, 25] <- sample(0:2, size = 1, replace = T, prob = c(0.8,0.1,0.1))
+    }
     # If this is a mutated individual, sample the indicated number of sites to
     # be mutated from the non-SDL, non-SAL
     if(hit[i]){
-      mut_sites <- sample((1:100)[-c(13,36,61)], size = hit[i], replace = F)
+      mut_sites <- sample((1:100)[-c(13,25,36,61)], size = hit[i], replace = F)
     # At each site to be mutated, replace the value of a random homolog with
     # a randomly-selected value from dfe
       pop[[i]][sample(1:2, size = 1, replace = F), mut_sites] <-
         sample(dfe, size = hit[i])
     }
   }
+  
   return(pop)
 }
 
-# 3 pick parents
+# 3 find parents
 # N = Total number of COUPLES/individuals to contribute to next generation
 Maury <- function(pop, fits, N = length(pop)){
   sexes <- rep("fem",N)
@@ -172,17 +180,13 @@ Maury <- function(pop, fits, N = length(pop)){
 # PARb = Starting locus of pseudoautosomal region of the male sex chromosomes
 # Output (gametes) = list of two sets of vectors each describing the sequence
 # of a haploid gamete
-MakeGametes <- function(pop, parents, PARb){
+MakeGametes <- function(pop, parents, chiasm = T){
   gametes <- vector(mode="list",length=2)
   names(gametes) <- c("eggs","sperm")
   
   # Iterate through each pair of parents
   for(i in 1:length(parents$Dads)){
   # For male...
-    # Check whether individual is chiasmatic or not
-    # TODO: Change this portion of code so individual is NOT always set as 
-    # chiasmatic
-    chiasm <- T
     # If individual is chiasmatic...
     if(chiasm){
       # Pick 3 random sites OTHER than 13, 36, and 61 in...
@@ -191,7 +195,7 @@ MakeGametes <- function(pop, parents, PARb){
         # Autosome II (52-99)
       # ... at which recombination occurs (recombination CANNOT occur at first or
       # final locus of a chromosome, so these loci are excluded)
-      SexRec <- sample((PARb+1):24, 1)
+      SexRec <- sample(2:13, 1)
       Chr1Rec <- sample(27:49, 1)
       Chr2Rec <- sample(52:99, 1)
       
@@ -221,9 +225,28 @@ MakeGametes <- function(pop, parents, PARb){
       # For each chromosome, randomly select ONE homolog from the two 
       # recombinant homologs and stick the 3 chromosomes together to create a
       # haploid genome, adding this genome to the list of gametes under "sperm"
-      gametes$sperm[i] <- paste(c(sample(SexChrGametes, 1),
-                                  sample(Chr1Gametes, 1),
-                                  sample(Chr2Gametes, 1)), collapse = ",")
+      if(sum(pop[[parents$Dads[i]]][,25]) == 0){
+        gametes$sperm[i] <- paste(c(sample(SexChrGametes, 1),
+                                    sample(Chr1Gametes, 1),
+                                    sample(Chr2Gametes, 1)), collapse = ",")
+      }else if(1 %in% pop[[parents$Dads[i]]][,25]){
+        pick <- sample(1:2, 1)
+        gametes$sperm[i] <- paste(c(SexChrGametes[pick],
+                                    Chr1Gametes[pick],
+                                    sample(Chr2Gametes, 1)), collapse = ",")
+      }else if(2 %in% pop[[parents$Dads[i]]][,25]){
+        pick <- sample(1:2, 1)
+        gametes$sperm[i] <- paste(c(SexChrGametes[pick],
+                                    sample(Chr1Gametes, 1),
+                                    Chr2Gametes[pick]), collapse = ",")
+      }
+      
+    }else{
+      pick <- sample(1:2, 3, replace = T)
+      gametes$sperm[i] <- paste(c(pop[[parents$Dads[i]]][pick[1],1:25],
+                                  pop[[parents$Dads[i]]][pick[2],26:50],
+                                  pop[[parents$Dads[i]]][pick[3],51:100]), 
+                                                         collapse = ",")
     }
   # For female..
     # Pick 3 random sites OTHER than 13, 36, and 61 in...
@@ -261,9 +284,21 @@ MakeGametes <- function(pop, parents, PARb){
     # For each chromosome, randomly select one homolog from the two 
     # recombinant homologs and stick these chromosomes together to create a
     # haploid genome, adding this genome to the list of gametes under "eggs"
-    gametes$eggs[i] <- paste(c(sample(SexChrGametes, 1),
-                                sample(Chr1Gametes, 1),
-                                sample(Chr2Gametes, 1)), collapse = ",")
+    if(sum(pop[[parents$Moms[i]]][,25]) == 0){
+      gametes$eggs[i] <- paste(c(sample(SexChrGametes, 1),
+                                  sample(Chr1Gametes, 1),
+                                  sample(Chr2Gametes, 1)), collapse = ",")
+    }else if(1 %in% pop[[parents$Moms[i]]][,25]){
+      pick <- sample(1:2, 1)
+      gametes$eggs[i] <- paste(c(SexChrGametes[pick],
+                                  Chr1Gametes[pick],
+                                  sample(Chr2Gametes, 1)), collapse = ",")
+    }else if(2 %in% pop[[parents$Moms[i]]][,25]){
+      pick <- sample(1:2, 1)
+      gametes$eggs[i] <- paste(c(SexChrGametes[pick],
+                                  sample(Chr1Gametes, 1),
+                                  Chr2Gametes[pick]), collapse = ",")
+    }
   }
   
   # Return list of eggs and sperm
@@ -301,36 +336,84 @@ MiracleOfLife <- function(gametes){
 # Runs the simulation on "pop_size" number of individuals for "gen_no" 
 # generations with an SAL selection coefficient of "s" and a PAR beginning locus
 # of "PARb" and output the final population
-Evolve <- function(pop_size, gen_no, s, PARb){
+Evolve <- function(pop_size, gen_no, s, chiasm){
   # Get a new population
   pop <- GetPop(pop_size)
   
   # Get a distribution of fitness effects
   dfe <- GetDFE()
   
+  # Initialize list of matrices
+  # For each matrix...
+  # Rows = Generations
+  # Columns = Individuals
+  results <- vector(mode = "list", length = 5)
+  names(results) <- c("FusionLocus","SDR","SAL36","SAL61","TotalFitness")
+  results$FusionLocus <- matrix(nrow = 2*gen_no, ncol = pop_size, 
+                                dimnames = list(rep(c("X","X/Y"), gen_no), 1:pop_size))
+  results$SDR <- matrix(nrow = 2*gen_no, ncol = pop_size, 
+                        dimnames = list(rep(c("X","X/Y"), gen_no), 1:pop_size))
+  results$SAL36 <- matrix(nrow = 2*gen_no, ncol = pop_size, 
+                          dimnames = list(rep(c("X","X/Y"), gen_no), 1:pop_size))
+  results$SAL61 <- matrix(nrow = 2*gen_no, ncol = pop_size, 
+                          dimnames = list(rep(c("X","X/Y"), gen_no), 1:pop_size))
+  results$TotalFitness <- matrix(nrow = gen_no, ncol = pop_size, 
+                                 dimnames = list(1:gen_no, 1:pop_size))
+  # Create iterator for the TWO rows corresponding to the current population
+  gen_rows <- 1:2
+  
   # For each generation in "gen_no"...
   for(gen in 1:gen_no){
+    print(paste(c("Generation: ", gen), collapse = ""))
+    
     # Mutate the starting population
     pop <- ActofGod(pop, dfe)
     
     # Assess the fitness of the mutated population
     fits <- GetFit(pop, s)
+    # Add loci and fitnesses to corresponding generation in output
+    results$TotalFitness[gen,] <- fits
+    for(i in 1:pop_size){
+      results$SDR[gen_rows, i] <- pop[[i]][,13]
+      results$FusionLocus[gen_rows, i] <- pop[[i]][,25]
+      results$SAL36[gen_rows, i] <- pop[[i]][,36]
+      results$SAL61[gen_rows, i] <- pop[[i]][,61]
+    }
     
     # Select parents based on the fitness
     parents <- Maury(pop, fits, length(pop))
     
     # Select gametes from these parents
-    gametes <- MakeGametes(pop, parents, PARb)
+    gametes <- MakeGametes(pop, parents, chiasm)
     
     # Breed the parents
     pop <- MiracleOfLife(gametes)
+    
+    # Move to next two generation's rows
+    gen_rows <- gen_rows + 2
     
     # Continue to next round of mutation
     next
   }
   
   # Output final genome after this many generations
-  return(pop)
+  return(results)
 }
 
+# Run simulation multiple times, storing output of each run as a new element in
+# list
+runs <- 1000
+AchiasmaticResults <- vector(mode = "list", length = runs)
+ChiasmaticResults <- vector(mode = "list", length = runs)
+for(sim in 1:runs){
+  print(" ")
+  print(paste(c("Simulation: ", sim), collapse = ""))
+  print("Achiasmy")
+  AchiasmaticResults[[sim]] <- Evolve(1000,100,0.1,F)
+  print("Chiasmy")
+  ChiasmaticResults[[sim]] <- Evolve(1000,100,0.1,T)
+}
+
+saveRDS(AchiasmaticResults, "AchiasmaticResults.rds")
+saveRDS(ChiasmaticResults, "ChiasmaticResults.rds")
 
