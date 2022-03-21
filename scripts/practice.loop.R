@@ -1,9 +1,6 @@
 source("functions.aneuploidy.R")
 # mutation rates
 mut.rates <- c(1.45e-8,
-               1.45e-9,
-               1.45e-10,
-               1.45e-11,
                1.45e-12)
 # selection coef of sex ant mutation
 # run with this dropped at .5 basically always fixed with above
@@ -14,10 +11,10 @@ s.ant = .5
 h.ant= 0.5
 
 # population size
-N <- 100
+N <- 1000
 
 # generations
-gens <- 50
+gens <- 500
 
 #iterations
 iter <- 10
