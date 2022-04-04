@@ -61,6 +61,7 @@ for(k in 1:3){
       counter <- 1
       while(segregating){
         pop <- generation(pop, pars)
+        
         cur.freq <- get.freq.ach(pop, pars)
         time.table[counter] <- cur.freq
         if(counter == gens) segregating <- F
