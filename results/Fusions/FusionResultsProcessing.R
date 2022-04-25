@@ -1,289 +1,534 @@
-setwd("/home/blackmonlab/Documents/Annabel/AchiasmyFusionSim/")
-
-# Read in results for simulation under achiasmatic and chiasmatic conditions
-achis.res <- readRDS("AchiasmaticResults.rds")
-chis.res <- readRDS("ChiasmaticResults.rds")
 library(viridisLite)
 library(ggplot2)
-col.vec <- viridis(length(achis.res))
 
+###################### Identify Appropriate mu and s ###########################
+setwd("/Users/knigh/Documents/GitHub/achiasmy-sims/results/Fusions/Apr16_2022")
 
-# Question 1: Do fusions occur more often on X or Y?
-# Prediction: Fusions more common on Y
-# Conclusion: No difference in frequencies
+# Data from running simulation on...
+# A-_----:  Heterogametic sex is achiasmatic
+# C-_----:  Heterogametic sex is chiasmatic
+# -X_----:  Fusions occur on X
+# -Y_----:  Fusions occur on Y
+# --_Lmu--: Low mutation rate
+# --_Hmu--: High mutation rate
+# --_--Ls:  Low selection coefficient on SAL
+# --_--Hs:  High selection coefficient on SAL
+CX_LmuLs.res <- readRDS("XChiasmaticResults_LowMuLowS.rds")
+CX_HmuLs.res <- readRDS("XChiasmaticResults_HighMuLowS.rds")
+CX_HmuHs.res <- readRDS("XChiasmaticResults_HighMuHighS.rds")
+CX_LmuHs.res <- readRDS("XChiasmaticResults_LowMuHighS.rds")
 
-# vectors in which to store frequencies of X & Y fusions in last generation of 
-# each simulation
-all.fus.X <- rep(NA, 1000)
-all.fus.Y <- rep(NA, 1000)
+CY_LmuLs.res <- readRDS("YChiasmaticResults_LowMuLowS.rds")
+CY_HmuLs.res <- readRDS("YChiasmaticResults_HighMuLowS.rds")
+CY_HmuHs.res <- readRDS("YChiasmaticResults_HighMuHighS.rds")
+CY_LmuHs.res <- readRDS("YChiasmaticResults_LowMuHighS.rds")
 
-# Iterate through each simulation and store the total frequency of X and Y 
-# fusions at last generation
-for(sim in 1:length(chis.res)){
-  # Sum all X vs. Y chr in both simulation classes
-  X.denom <- ncol(achis.res[[sim]]$SDR) + ncol(chis.res[[sim]]$SDR) + sum(!achis.res[[sim]]$SDR[nrow(achis.res[[sim]]$SDR),]) + sum(!chis.res[[sim]]$SDR[nrow(chis.res[[sim]]$SDR),])
-  Y.denom <- sum(achis.res[[sim]]$SDR[nrow(achis.res[[sim]]$SDR),]) + sum(chis.res[[sim]]$SDR[nrow(chis.res[[sim]]$SDR),])
-  
-  # Sum all X and Y with fusions in both simulation classes
-  X.num <- sum(achis.res[[sim]]$FusionLocus[nrow(achis.res[[sim]]$FusionLocus), (achis.res[[sim]]$SDR[nrow(achis.res[[sim]]$SDR),] == 0)] != 0) +
-    sum(chis.res[[sim]]$FusionLocus[nrow(chis.res[[sim]]$FusionLocus), (chis.res[[sim]]$SDR[nrow(chis.res[[sim]]$SDR),] == 0)] != 0) +
-    sum(achis.res[[sim]]$FusionLocus[nrow(achis.res[[sim]]$FusionLocus) - 1,] != 0) +
-    sum(chis.res[[sim]]$FusionLocus[nrow(chis.res[[sim]]$FusionLocus) - 1,] != 0)
+AX_LmuLs.res <- readRDS("XAchiasmaticResults_LowMuLowS.rds")
+AX_HmuLs.res <- readRDS("XAchiasmaticResults_HighMuLowS.rds")
+AX_HmuHs.res <- readRDS("XAchiasmaticResults_HighMuHighS.rds")
+AX_LmuHs.res <- readRDS("XAchiasmaticResults_LowMuHighS.rds")
+
+AY_LmuLs.res <- readRDS("YAchiasmaticResults_LowMuLowS.rds")
+AY_HmuLs.res <- readRDS("YAchiasmaticResults_HighMuLowS.rds")
+AY_HmuHs.res <- readRDS("YAchiasmaticResults_HighMuHighS.rds")
+AY_LmuHs.res <- readRDS("YAchiasmaticResults_LowMuHighS.rds")
+############################## General Parameters ##############################
+# Number of simulations must be known a priori
+num_sims <- 25
+col.vec <- viridis(num_sims)
+# Number of generations is number of rows in a matrix divided by 4*num_sims
+num_gens <- nrow(CX_LmuLs.res)/(4*num_sims)
+# Number of individuals is number of columns in a matrix
+num_indv <- ncol(CX_LmuLs.res)
+
+# Get total number of fusions at each generation for each simulation
+# Matrices:
+# Columns = Generations
+# Rows = Simulations
+# Cell = Total count OR proportion of fusions (all types)
+CX_LmuLs.count <- matrix(nrow = num_sims, ncol = num_gens)
+CX_LmuLs.prop <- matrix(nrow = num_sims, ncol = num_gens)
+
+CX_HmuLs.count <- matrix(nrow = num_sims, ncol = num_gens)
+CX_HmuLs.prop <- matrix(nrow = num_sims, ncol = num_gens)
+
+CX_HmuHs.count <- matrix(nrow = num_sims, ncol = num_gens)
+CX_HmuHs.prop <- matrix(nrow = num_sims, ncol = num_gens)
+
+CX_LmuHs.count <- matrix(nrow = num_sims, ncol = num_gens)
+CX_LmuHs.prop <- matrix(nrow = num_sims, ncol = num_gens)
+
+AX_LmuLs.count <- matrix(nrow = num_sims, ncol = num_gens)
+AX_LmuLs.prop <- matrix(nrow = num_sims, ncol = num_gens)
+
+AX_HmuLs.count <- matrix(nrow = num_sims, ncol = num_gens)
+AX_HmuLs.prop <- matrix(nrow = num_sims, ncol = num_gens)
+
+AX_HmuHs.count <- matrix(nrow = num_sims, ncol = num_gens)
+AX_HmuHs.prop <- matrix(nrow = num_sims, ncol = num_gens)
+
+AX_LmuHs.count <- matrix(nrow = num_sims, ncol = num_gens)
+AX_LmuHs.prop <- matrix(nrow = num_sims, ncol = num_gens)
+
+CY_LmuLs.count <- matrix(nrow = num_sims, ncol = num_gens)
+CY_LmuLs.prop <- matrix(nrow = num_sims, ncol = num_gens)
+
+CY_HmuLs.count <- matrix(nrow = num_sims, ncol = num_gens)
+CY_HmuLs.prop <- matrix(nrow = num_sims, ncol = num_gens)
+
+CY_HmuHs.count <- matrix(nrow = num_sims, ncol = num_gens)
+CY_HmuHs.prop <- matrix(nrow = num_sims, ncol = num_gens)
+
+CY_LmuHs.count <- matrix(nrow = num_sims, ncol = num_gens)
+CY_LmuHs.prop <- matrix(nrow = num_sims, ncol = num_gens)
+
+AY_LmuLs.count <- matrix(nrow = num_sims, ncol = num_gens)
+AY_LmuLs.prop <- matrix(nrow = num_sims, ncol = num_gens)
+
+AY_HmuLs.count <- matrix(nrow = num_sims, ncol = num_gens)
+AY_HmuLs.prop <- matrix(nrow = num_sims, ncol = num_gens)
+
+AY_HmuHs.count <- matrix(nrow = num_sims, ncol = num_gens)
+AY_HmuHs.prop <- matrix(nrow = num_sims, ncol = num_gens)
+
+AY_LmuHs.count <- matrix(nrow = num_sims, ncol = num_gens)
+AY_LmuHs.prop <- matrix(nrow = num_sims, ncol = num_gens)
+
+X.count <- 0
+Y.count <- 0
+rows <- 1:4
+
+for(sim in 1:nrow(CX_LmuLs.count)){
+  print(paste(c("Sim: ", sim), collapse = ""))
+  for(gen in 1:ncol(CX_LmuLs.count)){
+    # X
+    # Add count of fusions at current gen + sim to appropriate cell
+    CX_LmuLs.count[sim, gen] <- sum(CX_LmuLs.res[rows[3],] > 0) + sum(CX_LmuLs.res[rows[4],] > 0)
+    # Get number of X chromosomes at current gen + sim
+    X.count <- num_indv + sum(CX_LmuLs.res[rows[2],] == 0)
+    # Get proportion of X chromosomes with fusions and add to appropriate cell
+    CX_LmuLs.prop[sim, gen] <- CX_LmuLs.count[sim, gen]/X.count
     
-  Y.num <- sum(achis.res[[sim]]$FusionLocus[nrow(achis.res[[sim]]$FusionLocus), (achis.res[[sim]]$SDR[nrow(achis.res[[sim]]$SDR),] == 1)] != 0) +
-    sum(chis.res[[sim]]$FusionLocus[nrow(chis.res[[sim]]$FusionLocus), (chis.res[[sim]]$SDR[nrow(chis.res[[sim]]$SDR),] == 1)] != 0)
-  
-  # Get frequencies of both X and Y fusions in both simulations
-  all.fus.X[sim] <- X.num/X.denom
-  all.fus.Y[sim] <- Y.num/Y.denom
+    # Repeat for all other X chromosome simulations
+    CX_HmuLs.count[sim, gen] <- sum(CX_HmuLs.res[rows[3],] > 0) + sum(CX_HmuLs.res[rows[4],] > 0)
+    X.count <- num_indv + sum(CX_HmuLs.res[rows[2],] == 0)
+    CX_HmuLs.prop[sim, gen] <- CX_HmuLs.count[sim, gen]/X.count
+    
+    CX_HmuHs.count[sim, gen] <- sum(CX_HmuHs.res[rows[3],] > 0) + sum(CX_HmuHs.res[rows[4],] > 0)
+    X.count <- num_indv + sum(CX_HmuHs.res[rows[2],] == 0)
+    CX_HmuHs.prop[sim, gen] <- CX_HmuHs.count[sim, gen]/X.count
+    
+    CX_LmuHs.count[sim, gen] <- sum(CX_LmuHs.res[rows[3],] > 0) + sum(CX_LmuHs.res[rows[4],] > 0)
+    X.count <- num_indv + sum(CX_LmuHs.res[rows[2],] == 0)
+    CX_LmuHs.prop[sim, gen] <- CX_LmuHs.count[sim, gen]/X.count
+    
+    AX_LmuLs.count[sim, gen] <- sum(AX_LmuLs.res[rows[3],] > 0) + sum(AX_LmuLs.res[rows[4],] > 0)
+    X.count <- num_indv + sum(AX_LmuLs.res[rows[2],] == 0)
+    AX_LmuLs.prop[sim, gen] <- AX_LmuLs.count[sim, gen]/X.count
+    
+    AX_HmuLs.count[sim, gen] <- sum(AX_HmuLs.res[rows[3],] > 0) + sum(AX_HmuLs.res[rows[4],] > 0)
+    X.count <- num_indv + sum(AX_HmuLs.res[rows[2],] == 0)
+    AX_HmuLs.prop[sim, gen] <- AX_HmuLs.count[sim, gen]/X.count
+    
+    AX_HmuHs.count[sim, gen] <- sum(AX_HmuHs.res[rows[3],] > 0) + sum(AX_HmuHs.res[rows[4],] > 0)
+    X.count <- num_indv + sum(AX_HmuHs.res[rows[2],] == 0)
+    AX_HmuHs.prop[sim, gen] <- AX_HmuHs.count[sim, gen]/X.count
+    
+    AX_LmuHs.count[sim, gen] <- sum(AX_LmuHs.res[rows[3],] > 0) + sum(AX_LmuHs.res[rows[4],] > 0)
+    X.count <- num_indv + sum(AX_LmuHs.res[rows[2],] == 0)
+    AX_LmuHs.prop[sim, gen] <- AX_LmuHs.count[sim, gen]/X.count
+    
+    # Y
+    # Get count of all Y chr with fusions
+    CY_LmuLs.count[sim, gen] <- sum(CY_LmuLs.res[rows[4],] > 0)
+    # Get count of all Y chromosomes
+    Y.count <- sum(CY_LmuLs.res[rows[2],])
+    # Get proportion of Y chr with fusions
+    CY_LmuLs.prop[sim, gen] <- CY_LmuLs.count[sim, gen]/Y.count
+    
+    CY_HmuLs.count[sim, gen] <- sum(CY_HmuLs.res[rows[4],] > 0)
+    Y.count <- sum(CY_HmuLs.res[rows[2],])
+    CY_HmuLs.prop[sim, gen] <- CY_HmuLs.count[sim, gen]/Y.count
+    
+    CY_HmuHs.count[sim, gen] <- sum(CY_HmuHs.res[rows[4],] > 0)
+    Y.count <- sum(CY_HmuHs.res[rows[2],])
+    CY_HmuHs.prop[sim, gen] <- CY_HmuHs.count[sim, gen]/Y.count
+    
+    CY_LmuHs.count[sim, gen] <- sum(CY_LmuHs.res[rows[4],] > 0)
+    Y.count <- sum(CY_LmuHs.res[rows[2],])
+    CY_LmuHs.prop[sim, gen] <- CY_LmuHs.count[sim, gen]/Y.count
+    
+    AY_LmuLs.count[sim, gen] <- sum(AY_LmuLs.res[rows[4],] > 0)
+    Y.count <- sum(AY_LmuLs.res[rows[2],])
+    AY_LmuLs.prop[sim, gen] <- AY_LmuLs.count[sim, gen]/Y.count
+    
+    AY_HmuLs.count[sim, gen] <- sum(AY_HmuLs.res[rows[4],] > 0)
+    Y.count <- sum(AY_HmuLs.res[rows[2],])
+    AY_HmuLs.prop[sim, gen] <- AY_HmuLs.count[sim, gen]/Y.count
+    
+    AY_HmuHs.count[sim, gen] <- sum(AY_HmuHs.res[rows[4],] > 0)
+    Y.count <- sum(AY_HmuHs.res[rows[2],])
+    AY_HmuHs.prop[sim, gen] <- AY_HmuHs.count[sim, gen]/Y.count
+    
+    AY_LmuHs.count[sim, gen] <- sum(AY_LmuHs.res[rows[4],] > 0)
+    Y.count <- sum(AY_LmuHs.res[rows[2],])
+    AY_LmuHs.prop[sim, gen] <- AY_LmuHs.count[sim, gen]/Y.count
+    
+    # Get rows for next set
+    rows <- rows + 4
+  }
+}
+
+# Write proportion of all fusions under each condition to a file
+write.csv(CX_LmuLs.prop, file = "PropFusionsCXLmuLs.csv", row.names = F)
+write.csv(CX_HmuLs.prop, file = "PropFusionsCXHmuLs.csv", row.names = F)
+write.csv(CX_LmuHs.prop, file = "PropFusionsCXLmuHs.csv", row.names = F)
+write.csv(CX_HmuHs.prop, file = "PropFusionsCXHmuHs.csv", row.names = F)
+
+write.csv(CY_LmuLs.prop, file = "PropFusionsCYLmuLs.csv", row.names = F)
+write.csv(CY_HmuLs.prop, file = "PropFusionsCYHmuLs.csv", row.names = F)
+write.csv(CY_LmuHs.prop, file = "PropFusionsCYLmuHs.csv", row.names = F)
+write.csv(CY_HmuHs.prop, file = "PropFusionsCYHmuHs.csv", row.names = F)
+
+write.csv(AX_LmuLs.prop, file = "PropFusionsAXLmuLs.csv", row.names = F)
+write.csv(AX_HmuLs.prop, file = "PropFusionsAXHmuLs.csv", row.names = F)
+write.csv(AX_LmuHs.prop, file = "PropFusionsAXLmuHs.csv", row.names = F)
+write.csv(AX_HmuHs.prop, file = "PropFusionsAXHmuHs.csv", row.names = F)
+
+write.csv(AY_LmuLs.prop, file = "PropFusionsAYLmuLs.csv", row.names = F)
+write.csv(AY_HmuLs.prop, file = "PropFusionsAYHmuLs.csv", row.names = F)
+write.csv(AY_LmuHs.prop, file = "PropFusionsAYLmuHs.csv", row.names = F)
+write.csv(AY_HmuHs.prop, file = "PropFusionsAYHmuHs.csv", row.names = F)
+
+# Ensure sims with Y fusions never have fusions to X
+# (This was a bug fixed between Mar15 and Mar 26. Proportion of Y fusions is #
+# fusion to X/Y over total # Y chr, so if there are fusion to X total prop at
+# fixation will be > 1)
+sum(c(CY_LmuLs.prop > 1, CY_HmuLs.prop > 1, CY_LmuHs.prop > 1, CY_HmuHs.prop > 1,
+      AY_LmuLs.prop > 1, AY_HmuLs.prop > 1, AY_LmuHs.prop > 1, AY_HmuHs.prop > 1))
+
+# Plot fixation patterns Over generations for each
+plot(CX_LmuLs.prop[1,], type = "l", ylim=c(0,1), 
+     xlab = "Generation", ylab = "Frequency Fusions", 
+     main = "Chiasmatic X Low mu Low s",
+     col = col.vec[1])
+
+for(i in 2:nrow(CX_LmuLs.prop)){
+  lines(y = CX_LmuLs.prop[i, ], x = 1:ncol(CX_LmuLs.prop), col = col.vec[i])
+}
+
+plot(CX_HmuHs.prop[1,], type = "l", ylim=c(0,1), 
+     xlab = "Generation", ylab = "Frequency Fusions",
+     main = "Chiasmatic X High mu High s",
+     col = col.vec[1])
+
+for(i in 2:nrow(CX_HmuHs.prop)){
+  lines(y = CX_HmuHs.prop[i, ], x = 1:ncol(CX_HmuHs.prop), col = col.vec[i])
+}
+
+plot(CX_HmuLs.prop[1,], type = "l", ylim=c(0,1), 
+     xlab = "Generation", ylab = "Frequency Fusions",
+     main = "Chiasmatic X High mu Low s",
+     col = col.vec[1])
+
+for(i in 2:nrow(CX_HmuLs.prop)){
+  lines(y = CX_HmuLs.prop[i, ], x = 1:ncol(CX_HmuLs.prop), col = col.vec[i])
+}
+
+plot(CX_LmuHs.prop[1,], type = "l", ylim=c(0,1), 
+     xlab = "Generation", ylab = "Frequency Fusions",
+     main = "Chiasmatic X Low mu High s",
+     col = col.vec[1])
+
+for(i in 2:nrow(CX_LmuHs.prop)){
+  lines(y = CX_LmuHs.prop[i, ], x = 1:ncol(CX_LmuHs.prop), col = col.vec[i])
+}
+
+plot(AX_LmuLs.prop[1,], type = "l", ylim=c(0,1), 
+     xlab = "Generation", ylab = "Frequency Fusions",
+     main = "Achiasmatic X Low mu Low s",
+     col = col.vec[1])
+
+for(i in 2:nrow(AX_LmuLs.prop)){
+  lines(y = AX_LmuLs.prop[i, ], x = 1:ncol(AX_LmuLs.prop), col = col.vec[i])
+}
+
+plot(AX_HmuHs.prop[1,], type = "l", ylim=c(0,1), 
+     xlab = "Generation", ylab = "Frequency Fusions",
+     main = "Achiasmatic X High mu High s",
+     col = col.vec[1])
+
+for(i in 2:nrow(AX_HmuHs.prop)){
+  lines(y = AX_HmuHs.prop[i, ], x = 1:ncol(AX_HmuHs.prop), col = col.vec[i])
+}
+
+plot(AX_HmuLs.prop[1,], type = "l", ylim=c(0,1), 
+     xlab = "Generation", ylab = "Frequency Fusions",
+     main = "Achiasmatic X High mu Low s",
+     col = col.vec[1])
+
+for(i in 2:nrow(AX_HmuLs.prop)){
+  lines(y = AX_HmuLs.prop[i, ], x = 1:ncol(AX_HmuLs.prop), col = col.vec[i])
+}
+
+plot(AX_LmuHs.prop[1,], type = "l", ylim=c(0,1), 
+     xlab = "Generation", ylab = "Frequency Fusions",
+     main = "Achiasmatic X Low mu High s",
+     col = col.vec[1])
+
+for(i in 2:nrow(AX_LmuHs.prop)){
+  lines(y = AX_LmuHs.prop[i, ], x = 1:ncol(AX_LmuHs.prop), col = col.vec[i])
+}
+
+
+plot(CY_LmuLs.prop[1,], type = "l", ylim=c(0,1), 
+     xlab = "Generation", ylab = "Frequency Fusions",
+     main = "Chiasmatic Y Low mu Low s",
+     col = col.vec[1])
+
+for(i in 2:nrow(CY_LmuLs.prop)){
+  lines(y = CY_LmuLs.prop[i, ], x = 1:ncol(CY_LmuLs.prop), col = col.vec[i])
+}
+
+plot(CY_HmuHs.prop[1,], type = "l", ylim=c(0,1), 
+     xlab = "Generation", ylab = "Frequency Fusions",
+     main = "Chiasmatic Y High mu High s",
+     col = col.vec[1])
+
+for(i in 2:nrow(CY_HmuHs.prop)){
+  lines(y = CY_HmuHs.prop[i, ], x = 1:ncol(CY_HmuHs.prop), col = col.vec[i])
+}
+
+plot(CY_HmuLs.prop[1,], type = "l", ylim=c(0,1), 
+     xlab = "Generation", ylab = "Frequency Fusions",
+     main = "Chiasmatic Y High mu Low s",
+     col = col.vec[1])
+
+for(i in 2:nrow(CY_HmuLs.prop)){
+  lines(y = CY_HmuLs.prop[i, ], x = 1:ncol(CY_HmuLs.prop), col = col.vec[i])
+}
+
+plot(CY_LmuHs.prop[1,], type = "l", ylim=c(0,1), 
+     xlab = "Generation", ylab = "Frequency Fusions",
+     main = "Chiasmatic Y Low mu High s",
+     col = col.vec[1])
+
+for(i in 2:nrow(CY_LmuHs.prop)){
+  lines(y = CY_LmuHs.prop[i, ], x = 1:ncol(CY_LmuHs.prop), col = col.vec[i])
+}
+
+plot(AY_LmuLs.prop[1,], type = "l", ylim=c(0,1), 
+     xlab = "Generation", ylab = "Frequency Fusions",
+     main = "Achiasmatic Y Low mu Low s",
+     col = col.vec[1])
+
+for(i in 2:nrow(AY_LmuLs.prop)){
+  lines(y = AY_LmuLs.prop[i, ], x = 1:ncol(AY_LmuLs.prop), col = col.vec[i])
+}
+
+plot(AY_HmuHs.prop[1,], type = "l", ylim=c(0,1), 
+     xlab = "Generation", ylab = "Frequency Fusions",
+     main = "Achiasmatic Y High mu High s",
+     col = col.vec[1])
+
+for(i in 2:nrow(AY_HmuHs.prop)){
+  lines(y = AY_HmuHs.prop[i, ], x = 1:ncol(AY_HmuHs.prop), col = col.vec[i])
+}
+
+plot(AY_HmuLs.prop[1,], type = "l", ylim=c(0,1), 
+     xlab = "Generation", ylab = "Frequency Fusions",
+     main = "Achiasmatic Y High mu Low s",
+     col = col.vec[1])
+
+for(i in 2:nrow(AY_HmuLs.prop)){
+  lines(y = AY_HmuLs.prop[i, ], x = 1:ncol(AY_HmuLs.prop), col = col.vec[i])
+}
+
+plot(AY_LmuHs.prop[1,], type = "l", ylim=c(0,1), 
+     xlab = "Generation", ylab = "Frequency Fusions",
+     main = "Achiasmatic Y Low mu High s",
+     col = col.vec[1])
+
+for(i in 2:nrow(AY_LmuHs.prop)){
+  lines(y = AY_LmuHs.prop[i, ], x = 1:ncol(AY_LmuHs.prop), col = col.vec[i])
 }
 
 
 
-################################ Data for Q2-Q5 ################################
-# Matrices: Each datapoint is the total frequency of an allele at a generation
-# row = sim
-# col = gen
+############################### Data collection ################################
+# All matrices start with the same skeleton:
+# col = generation
+# row = simulation
+num.all.A1.X <- all.A1.X <- num.all.A2.X <- all.A2.X <- 
+  num.all.A1.Y <- all.A1.Y <- num.all.A2.Y <- all.A2.Y <-
+  num.achias.A1.X <- achias.A1.X <- num.achias.A2.X <- achias.A2.X <- 
+  num.achias.A1.Y <- achias.A1.Y <- num.achias.A2.Y <- achias.A2.Y <-
+  num.chias.A1.X <- chias.A1.X <- num.chias.A2.X <- chias.A2.X <- 
+  num.chias.A1.Y <- chias.A1.Y <- num.chias.A2.Y <- chias.A2.Y <- matrix(nrow = num_sims, ncol = num_gens)
 
-# All Sims, All Sex
-num.all.A1.sex <- matrix(nrow = length(achis.res),
-                         ncol = nrow(achis.res[[1]]$FusionLocus)/2)
-all.A1.sex <- matrix(nrow = length(achis.res),
-                     ncol = nrow(achis.res[[1]]$FusionLocus)/2)
-num.all.A2.sex <- matrix(nrow = length(achis.res),
-                         ncol = nrow(achis.res[[1]]$FusionLocus)/2)
-all.A2.sex <- matrix(nrow = length(achis.res),
-                     ncol = nrow(achis.res[[1]]$FusionLocus)/2)
+# Add data from each group of 4 rows, as a group of 4 rows represents a gen
+cur.gen.rows <- 1:4
+cur.sim <- 1
+cur.gen <- 1
 
-# Achiasmatic Sims, All Sex
-num.achias.A1.sex <- matrix(nrow = length(achis.res),
-                         ncol = nrow(achis.res[[1]]$FusionLocus)/2)
-achias.A1.sex <- matrix(nrow = length(achis.res),
-                        ncol = nrow(achis.res[[1]]$FusionLocus)/2)
-num.achias.A2.sex <- matrix(nrow = length(achis.res),
-                            ncol = nrow(achis.res[[1]]$FusionLocus)/2)
-achias.A2.sex <- matrix(nrow = length(achis.res),
-                        ncol = nrow(achis.res[[1]]$FusionLocus)/2)
-
-# Chiasmatic Sims, All Sex
-num.chias.A1.sex <- matrix(nrow = length(chis.res),
-                            ncol = nrow(chis.res[[1]]$FusionLocus)/2)
-chias.A1.sex <- matrix(nrow = length(chis.res),
-                        ncol = nrow(chis.res[[1]]$FusionLocus)/2)
-num.chias.A2.sex <- matrix(nrow = length(chis.res),
-                            ncol = nrow(chis.res[[1]]$FusionLocus)/2)
-chias.A2.sex <- matrix(nrow = length(chis.res),
-                        ncol = nrow(chis.res[[1]]$FusionLocus)/2)
-
-# All Sims, X
-num.all.A1.X <- matrix(nrow = length(achis.res),
-                         ncol = nrow(achis.res[[1]]$FusionLocus)/2)
-all.A1.X <- matrix(nrow = length(achis.res),
-                     ncol = nrow(achis.res[[1]]$FusionLocus)/2)
-num.all.A2.X <- matrix(nrow = length(achis.res),
-                         ncol = nrow(achis.res[[1]]$FusionLocus)/2)
-all.A2.X <- matrix(nrow = length(achis.res),
-                     ncol = nrow(achis.res[[1]]$FusionLocus)/2)
-
-# All Sims, Y
-num.all.A1.Y <- matrix(nrow = length(achis.res),
-                       ncol = nrow(achis.res[[1]]$FusionLocus)/2)
-all.A1.Y <- matrix(nrow = length(achis.res),
-                   ncol = nrow(achis.res[[1]]$FusionLocus)/2)
-num.all.A2.Y <- matrix(nrow = length(achis.res),
-                       ncol = nrow(achis.res[[1]]$FusionLocus)/2)
-all.A2.Y <- matrix(nrow = length(achis.res),
-                   ncol = nrow(achis.res[[1]]$FusionLocus)/2)
-
-# Chiasmatic vs. Achiasmatic A2 on Y
-num.achias.A2.Y <- matrix(nrow = length(achis.res),
-                         ncol = nrow(achis.res[[1]]$FusionLocus)/2)
-achias.A2.Y <- matrix(nrow = length(achis.res),
-                     ncol = nrow(achis.res[[1]]$FusionLocus)/2)
-num.chias.A2.Y <- matrix(nrow = length(chis.res),
-                           ncol = nrow(chis.res[[1]]$FusionLocus)/2)
-chias.A2.Y <- matrix(nrow = length(chis.res),
-                       ncol = nrow(chis.res[[1]]$FusionLocus)/2)
-
-for(sim in 1:nrow(all.A1.sex)){ 
-  gen.pair <- 1:2
-  for(gen in 1:(nrow(achis.res[[sim]]$FusionLocus)/2)){
-    # All Sims, All Sex
-    num.all.A1.sex[sim,gen] <- sum(sum(achis.res[[sim]]$FusionLocus[gen.pair,] == 1) +
-                                     sum(chis.res[[sim]]$FusionLocus[gen.pair,] == 1))
-    all.A1.sex[sim,gen] <- num.all.A1.sex[sim,gen]/(ncol(achis.res[[sim]]$FusionLocus)*4)
-    num.all.A2.sex[sim,gen] <- sum(sum(achis.res[[sim]]$FusionLocus[gen.pair,] == 2) +
-                                     sum(chis.res[[sim]]$FusionLocus[gen.pair,] == 2))
-    all.A2.sex[sim,gen] <- num.all.A2.sex[sim,gen]/(ncol(achis.res[[sim]]$FusionLocus)*4)
+while(cur.sim <= num_sims){
+  print(cur.gen)
+  
+  # All Sims, X
+  # Number of X chromosomes in current generation
+  num_X <- ncol(achiasX.res) + sum(achiasX.res[cur.gen.rows[2],] == 0) +
+             ncol(chiasX.res) + sum(chiasX.res[cur.gen.rows[2],] == 0) 
+  
+  # If fusions were permitted only on X chromosomes, then any X/Y loci with 
+  # fusions must be X chromosomes
+  num.all.A1.X[cur.sim, cur.gen] <- sum(achiasX.res[cur.gen.rows[3],] == 1,
+                                        achiasX.res[cur.gen.rows[4],] == 1,
+                                        chiasX.res[cur.gen.rows[3],] == 1,
+                                        chiasX.res[cur.gen.rows[4],] == 1)
+  all.A1.X[cur.sim, cur.gen] <- num.all.A1.X[cur.sim, cur.gen]/num_X
+  
+  num.all.A2.X[cur.sim, cur.gen] <- sum(achiasX.res[cur.gen.rows[3],] == 2,
+                                        achiasX.res[cur.gen.rows[4],] == 2,
+                                        chiasX.res[cur.gen.rows[3],] == 2,
+                                        chiasX.res[cur.gen.rows[4],] == 2)
+  all.A2.X[cur.sim, cur.gen] <- num.all.A2.X[cur.sim, cur.gen]/num_X
+  
+  # Achiasmy, X
+  num_X_achias <- ncol(achiasX.res) + sum(achiasX.res[cur.gen.rows[2],] == 0)
+  
+  num.achias.A1.X[cur.sim, cur.gen] <- sum(achiasX.res[cur.gen.rows[3],] == 1,
+                                        achiasX.res[cur.gen.rows[4],] == 1)
+  achias.A1.X[cur.sim, cur.gen] <- num.achias.A1.X[cur.sim, cur.gen]/num_X_achias
+  
+  num.achias.A2.X[cur.sim, cur.gen] <- sum(achiasX.res[cur.gen.rows[3],] == 2,
+                                        achiasX.res[cur.gen.rows[4],] == 2)
+  achias.A2.X[cur.sim, cur.gen] <- num.achias.A2.X[cur.sim, cur.gen]/num_X_achias
+  
+  # Chiasmy, X
+  num_X_chias <- ncol(chiasX.res) + sum(chiasX.res[cur.gen.rows[2],] == 0)
+  
+  num.chias.A1.X[cur.sim, cur.gen] <- sum(chiasX.res[cur.gen.rows[3],] == 1,
+                                           chiasX.res[cur.gen.rows[4],] == 1)
+  chias.A1.X[cur.sim, cur.gen] <- num.chias.A1.X[cur.sim, cur.gen]/num_X_chias
+  
+  num.chias.A2.X[cur.sim, cur.gen] <- sum(chiasX.res[cur.gen.rows[3],] == 2,
+                                           chiasX.res[cur.gen.rows[4],] == 2)
+  chias.A2.X[cur.sim, cur.gen] <- num.chias.A2.X[cur.sim, cur.gen]/num_X_chias
+  
+  # All Sims, Y
+  num_Y <- sum(achiasY.res[cur.gen.rows[2],] == 1, chiasY.res[cur.gen.rows[2],] == 1) 
+  
+  num.all.A1.Y[cur.sim, cur.gen] <- sum(achiasY.res[cur.gen.rows[3],] == 1,
+                                        achiasY.res[cur.gen.rows[4],] == 1,
+                                        chiasY.res[cur.gen.rows[3],] == 1,
+                                        chiasY.res[cur.gen.rows[4],] == 1)
+  all.A1.Y[cur.sim, cur.gen] <- num.all.A1.Y[cur.sim, cur.gen]/num_Y
+  
+  num.all.A2.Y[cur.sim, cur.gen] <- sum(achiasY.res[cur.gen.rows[3],] == 2,
+                                        achiasY.res[cur.gen.rows[4],] == 2,
+                                        chiasY.res[cur.gen.rows[3],] == 2,
+                                        chiasY.res[cur.gen.rows[4],] == 2)
+  all.A2.Y[cur.sim, cur.gen] <- num.all.A2.Y[cur.sim, cur.gen]/num_Y
     
-    # Achiasmatic Sims, All Sex
-    num.achias.A1.sex[sim,gen] <- sum(achis.res[[sim]]$FusionLocus[gen.pair,] == 1)
-    achias.A1.sex[sim,gen] <- num.achias.A1.sex[sim,gen]/(ncol(achis.res[[sim]]$FusionLocus)*2)
-    num.achias.A2.sex[sim,gen] <- sum(achis.res[[sim]]$FusionLocus[gen.pair,] == 2)
-    achias.A2.sex[sim,gen] <- num.achias.A2.sex[sim,gen]/(ncol(achis.res[[sim]]$FusionLocus)*2)
-    
-    # Chiasmatic Sims, All Sex
-    num.chias.A1.sex[sim,gen] <- sum(chis.res[[sim]]$FusionLocus[gen.pair,] == 1)
-    chias.A1.sex[sim,gen] <- num.chias.A1.sex[sim,gen]/(ncol(chis.res[[sim]]$FusionLocus)*2)
-    num.chias.A2.sex[sim,gen] <- sum(chis.res[[sim]]$FusionLocus[gen.pair,] == 2)
-    chias.A2.sex[sim,gen] <- num.chias.A2.sex[sim,gen]/(ncol(chis.res[[sim]]$FusionLocus)*2)
-    
-    # All Sims, X
-    X.denom <- ncol(achis.res[[sim]]$SDR) + ncol(chis.res[[sim]]$SDR) + sum(!achis.res[[sim]]$SDR[nrow(achis.res[[sim]]$SDR),]) + sum(!chis.res[[sim]]$SDR[nrow(chis.res[[sim]]$SDR),])
-    num.all.A1.X[sim,gen] <-sum(achis.res[[sim]]$FusionLocus[gen.pair[1],] == 1) +
-      sum(chis.res[[sim]]$FusionLocus[gen.pair[1],] == 1) +
-      sum(achis.res[[sim]]$FusionLocus[gen.pair[2], (achis.res[[sim]]$SDR[gen.pair[2],] == 0)] == 1) +
-      sum(chis.res[[sim]]$FusionLocus[gen.pair[2], (chis.res[[sim]]$SDR[gen.pair[2],] == 0)] == 1)
-    all.A1.X[sim,gen] <- num.all.A1.X[sim,gen]/X.denom
-    num.all.A2.X[sim,gen] <-sum(achis.res[[sim]]$FusionLocus[gen.pair[1],] == 2) +
-      sum(chis.res[[sim]]$FusionLocus[gen.pair[1],] == 2) +
-      sum(achis.res[[sim]]$FusionLocus[gen.pair[2], (achis.res[[sim]]$SDR[gen.pair[2],] == 0)] == 2) +
-      sum(chis.res[[sim]]$FusionLocus[gen.pair[2], (chis.res[[sim]]$SDR[gen.pair[2],] == 0)] == 2)
-    all.A2.X[sim,gen] <- num.all.A2.X[sim,gen]/X.denom
-    
-    # All Sims, Y
-    Y.denom <- sum(achis.res[[sim]]$SDR[nrow(achis.res[[sim]]$SDR),]) + sum(chis.res[[sim]]$SDR[nrow(chis.res[[sim]]$SDR),])
-    num.all.A1.Y[sim,gen] <- sum(achis.res[[sim]]$FusionLocus[gen.pair[2], (achis.res[[sim]]$SDR[gen.pair[2],] )] == 1) +
-      sum(chis.res[[sim]]$FusionLocus[gen.pair[2], (chis.res[[sim]]$SDR[gen.pair[2],] )] == 1)
-    all.A1.Y[sim,gen] <- num.all.A1.Y[sim,gen]/Y.denom
-    num.all.A2.Y[sim,gen] <-sum(achis.res[[sim]]$FusionLocus[gen.pair[2], (achis.res[[sim]]$SDR[gen.pair[2],] )] == 2) +
-      sum(chis.res[[sim]]$FusionLocus[gen.pair[2], (chis.res[[sim]]$SDR[gen.pair[2],] )] == 2)
-    all.A2.Y[sim,gen] <- num.all.A2.Y[sim,gen]/Y.denom
-    
-    # Chiasmatic vs. Achiasmatic A2 on Y
-    Y.denom.achias <- sum(achis.res[[sim]]$SDR[nrow(achis.res[[sim]]$SDR),])
-    num.achias.A2.Y[sim,gen] <-sum(achis.res[[sim]]$FusionLocus[gen.pair[2], (achis.res[[sim]]$SDR[gen.pair[2],] )] == 2)
-    achias.A2.Y[sim,gen] <- num.achias.A2.Y[sim,gen]/Y.denom.achias
-    
-    Y.denom.chias <- sum(chis.res[[sim]]$SDR[nrow(chis.res[[sim]]$SDR),])
-    num.chias.A2.Y[sim,gen] <- sum(chis.res[[sim]]$FusionLocus[gen.pair[2], (chis.res[[sim]]$SDR[gen.pair[2],] )] == 2)
-    chias.A2.Y[sim,gen] <- num.chias.A2.Y[sim,gen]/Y.denom.chias
-    
-    gen.pair <- gen.pair + 2
+  
+  
+  # Achiasmy, Y
+  num_Y_achias <- sum(achiasY.res[cur.gen.rows[2],] == 1)
+  
+  num.achias.A1.Y[cur.sim, cur.gen] <- sum(achiasY.res[cur.gen.rows[3],] == 1,
+                                           achiasY.res[cur.gen.rows[4],] == 1)
+  achias.A1.Y[cur.sim, cur.gen] <- num.achias.A1.Y[cur.sim, cur.gen]/num_Y_achias
+  
+  num.achias.A2.Y[cur.sim, cur.gen] <- sum(achiasY.res[cur.gen.rows[3],] == 2,
+                                           achiasY.res[cur.gen.rows[4],] == 2)
+  achias.A2.Y[cur.sim, cur.gen] <- num.achias.A2.Y[cur.sim, cur.gen]/num_Y_achias
+  
+  # Chiasmy, Y
+  num_Y_chias <- sum(chiasY.res[cur.gen.rows[2],] == 1)
+  
+  num.chias.A1.Y[cur.sim, cur.gen] <- sum(chiasY.res[cur.gen.rows[3],] == 1,
+                                          chiasY.res[cur.gen.rows[4],] == 1)
+  chias.A1.Y[cur.sim, cur.gen] <- num.chias.A1.Y[cur.sim, cur.gen]/num_Y_chias
+  
+  num.chias.A2.Y[cur.sim, cur.gen] <- sum(chiasY.res[cur.gen.rows[3],] == 2,
+                                          chiasY.res[cur.gen.rows[4],] == 2)
+  chias.A2.Y[cur.sim, cur.gen] <- num.chias.A2.Y[cur.sim, cur.gen]/num_Y_chias
+  
+  
+  # If you've reached the last generation in this simulation, move to the next
+  if(cur.gen == num_gens){
+    cur.sim <- cur.sim + 1
+    cur.gen <- 1
+    cur.gen.rows <- cur.gen.rows + 4
+    next
+  }else{
+    cur.gen <- cur.gen + 1
+    cur.gen.rows <- cur.gen.rows + 4
+    next
   }
 }
 
 ################################## Question 2 ##################################
 # Question 2: Do large and small autosomes differ in frequency of fusion reg-
 # ardless of achiasmy status of species?
-# Finding 2: Small but significantly greater proportion of small fusions
-t.test(num.all.A1.sex[,100], num.all.A2.sex[,100])
+
+# Finding Q2: 
+t.test(num.all.A1.X[,num_gens], num.all.A2.X[,num_gens])
+t.test(num.all.A1.Y[,num_gens], num.all.A2.Y[,num_gens])
 
 # Plot 2.1:
 # 1 color per simulation
 # X = Generations (100)
-# Y = Frequency of Autosome1-Sex fusion across both chiasmatic and achiasmatic
-#     condition
+# Y = Frequency of small-X fusion across both chiasmatic and achiasmatic
+#     conditions
 
-plot(all.A1.sex[1,], type = "l", ylim=c(0,1), 
-     xlab = "Generation", ylab = "Frequency A1 Fusion across All Sex Chr in Both A/C",
+plot(all.A1.X[1,], type = "l", ylim=c(0,1), 
+     xlab = "Generation", ylab = "Frequency Small Fusions on X Chr in Both A/C",
      col = col.vec[1])
 
-for(i in 2:nrow(all.A1.sex)){
-  lines(y = all.A1.sex[i, ], x = 1:ncol(all.A1.sex), col = col.vec[i])
+for(i in 2:nrow(all.A1.X)){
+  lines(y = all.A1.X[i, ], x = 1:ncol(all.A1.X), col = col.vec[i])
 }
 
 # Plot 2.2:
-# 1 color per simulation
-# X = Generations (100)
-# Y = Frequency of Autosome2-Sex fusion across both chiasmatic and achiasmatic
-#     conditions
-
-plot(all.A2.sex[1,], type = "l", ylim=c(0,1), 
-     xlab = "Generation", ylab = "Frequency A2 Fusion across All Sex Chr in Both A/C",
+plot(all.A2.X[1,], type = "l", ylim=c(0,1), 
+     xlab = "Generation", ylab = "Frequency Large Fusions on X Chr in Both A/C",
      col = col.vec[1])
 
-for(i in 2:nrow(all.A2.sex)){
-  lines(y = all.A2.sex[i, ], x = 1:ncol(all.A2.sex), col = col.vec[i])
+for(i in 2:nrow(all.A2.X)){
+  lines(y = all.A2.X[i, ], x = 1:ncol(all.A2.X), col = col.vec[i])
+}
+
+# Plot 2.3:
+plot(all.A1.Y[1,], type = "l", ylim=c(0,1), 
+     xlab = "Generation", ylab = "Frequency Small Fusions on Y Chr in Both A/C",
+     col = col.vec[1])
+
+for(i in 2:nrow(all.A1.Y)){
+  lines(y = all.A1.Y[i, ], x = 1:ncol(all.A1.Y), col = col.vec[i])
+}
+
+# Plot 2.4:
+plot(all.A2.Y[1,], type = "l", ylim=c(0,1), 
+     xlab = "Generation", ylab = "Frequency Large Fusions on Y Chr in Both A/C",
+     col = col.vec[1])
+
+for(i in 2:nrow(all.A2.Y)){
+  lines(y = all.A2.Y[i, ], x = 1:ncol(all.A2.Y), col = col.vec[i])
 }
 
 
 ################################## Question 3 ##################################
 # Question 3: Does the proportion of small and large autosomal fusions differ 
 # between chiasmatic and achiasmatic species?
-# Finding: Proportion of small:large NOT significantly greater in achiasmatic 
-# than in chiasmatic
-t.test(num.achias.A1.sex[,100]/num.achias.A2.sex[,100], num.chias.A1.sex[,100]/num.chias.A2.sex[,100])
-
-# Finding: Total number of small fusions NOT significantly greater in achiasmatic
-t.test(num.achias.A1.sex[,100], num.chias.A1.sex[,100])
-
-# Plot 3.1
-# 1 color per simulation
-# Y = Frequency of small autosomal fusion in achiasmatic simulation
-# X = Generation
-plot(achias.A1.sex[1,], type = "l", ylim=c(0,1), 
-     xlab = "Generation", ylab = "Frequency A2 Fusion Across All Sex Chr in Achiasmatic",
-     col = col.vec[1])
-
-for(i in 2:nrow(achias.A1.sex)){
-  lines(y = achias.A1.sex[i, ], x = 1:ncol(achias.A1.sex), col = col.vec[i])
-}
-
-# Plot 3.2
-# 1 color per simulation
-# Y = Frequency of large autosomal fusion in achiasmatic simulation
-# X = Generation
-plot(achias.A2.sex[1,], type = "l", ylim=c(0,1), 
-     xlab = "Generation", ylab = "Frequency A2 Fusion Across All Sex Chr in Achiasmatic",
-     col = col.vec[1])
-
-for(i in 2:nrow(achias.A2.sex)){
-  lines(y = achias.A2.sex[i, ], x = 1:ncol(achias.A2.sex), col = col.vec[i])
-}
-
-# Plot 3.3
-# 1 color per simulation
-# Y = Frequency of small autosomal fusion in chiasmatic simulation
-# X = Generation
-plot(chias.A1.sex[1,], type = "l", ylim=c(0,1), 
-     xlab = "Generation", ylab = "Frequency A2 Fusion Across All Sex Chr in chiasmatic",
-     col = col.vec[1])
-
-for(i in 2:nrow(chias.A1.sex)){
-  lines(y = chias.A1.sex[i, ], x = 1:ncol(chias.A1.sex), col = col.vec[i])
-}
-
-# Plot 3.4
-# 1 color per simulation
-# Y = Frequency of large autosomal fusion in chiasmatic simulation
-# X = Generation
-plot(chias.A2.sex[1,], type = "l", ylim=c(0,1), 
-     xlab = "Generation", ylab = "Frequency A2 Fusion Across All Sex Chr in chiasmatic",
-     col = col.vec[1])
-
-for(i in 2:nrow(chias.A2.sex)){
-  lines(y = chias.A2.sex[i, ], x = 1:ncol(chias.A2.sex), col = col.vec[i])
-}
 
 ################################## Question 4 ##################################
-# Question 3: Does the proportion of small vs. large fusions differ between X
+# Question 4: Does the proportion of small vs. large fusions differ between X
 # and Y chromosomes?
-# Finding: Proportion of small to large fusions is significantly higher on Y 
-# than on X chromosomes
+# Finding: 
 
-# Replace 0s with 1s so 0 is never in denominator
-ed.all.A2.X <- all.A2.X
-ed.num.all.A2.X <- num.all.A2.X
-ed.all.A2.Y <- all.A2.Y
-ed.num.all.A2.Y <- num.all.A2.Y
-for(i in 1:nrow(num.all.A2.Y)){
-  if(num.all.A2.Y[i,100] == 0){
-    ed.num.all.A2.Y[i,100] <- 1
-    ed.all.A2.Y[,100] <- 10^-100
-  }
-  if(num.all.A2.X[i,100] == 0){
-    ed.num.all.A2.X[i,100] <- 1
-    ed.all.A2.X[,100] <- 10^-100
-  }
-}
-
-Y.A1_A2 <- num.all.A1.Y[,100]/ed.num.all.A2.Y[,100]
-X.A1_A2 <- num.all.A1.X[,100]/ed.num.all.A2.X[,100]
-Y.Y.t <- t.test(Y.A1_A2, X.A1_A2)
-
+################################## Question 5 ##################################
 # Question 5: Do achiasmatic species have lower fequency of large autosomal
 # fusions compared to chiasmatic species?
-# Finding: Achiasmy does NOT impact the number of large fusions to Y chromosomes
-t.test(num.achias.A2.Y, num.chias.A2.Y)
+# Finding: 
 

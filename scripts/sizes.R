@@ -5,7 +5,7 @@
 # SA loci
 
 #  sex chromosome         autosome 1         autosome 2
-#  1-12 SDL (PAR)14-25    26-35 SA 37-50     51-60 SA 62-100
+#  1-12 SDL (PAR)14-25    26-27 SA 29-50     51-54 SA 56-100
 
 # SDL 0=X 1=Y
 # SA 0=female benefit; 1=male benefit
@@ -46,9 +46,9 @@ GetPop <- function(N){
     pop[[i]][2,13] <- sample(0:1, size = 1, replace = F, prob = rep(0.5,2))
     # Start each individual with NO sex chr-autosome fusions
     pop[[i]][,25] <- 0
-    # TODO Should SAL have equal probability of being male or female benefit?
-    pop[[i]][,36] <- sample(0:1, size = 2, replace = T, prob = rep(0.5,2))
-    pop[[i]][,61] <- sample(0:1, size = 2, replace = T, prob = rep(0.5,2))
+    
+    pop[[i]][,28] <- sample(0:1, size = 2, replace = T, prob = rep(0.5,2))
+    pop[[i]][,55] <- sample(0:1, size = 2, replace = T, prob = rep(0.5,2))
   }
   return(pop)
 }
@@ -64,40 +64,40 @@ GetFit <- function(pop, s){
   for(i in 1:length(pop)){
     # Create a vector of averaged fitness values of ALL homologous loci, 
     # excluding the SDL and SAL
-    locus_fits <- colSums(pop[[i]][,-c(13,25,36,61)])/2
+    locus_fits <- colSums(pop[[i]][,-c(13,25,28,55)])/2
     
     # If the individual is a male...
     if(1 %in% pop[[i]][,13]){
-      # If SAL36 genotype is 00, append 1-s36 to vector
-      if(sum(pop[[i]][,36]) == 0){
+      # If SAL28 genotype is 00, append 1-s to vector
+      if(sum(pop[[i]][,28]) == 0){
         locus_fits <- append(locus_fits, 1 - s)
-      # If SAL36 genotype is 01, append 1 - 0.5*s36 to vector
-      }else if(sum(pop[[i]][,36]) == 1){
+        # If SAL28 genotype is 01, append 1 - 0.5*s to vector
+      }else if(sum(pop[[i]][,28]) == 1){
         locus_fits <- append(locus_fits, 1 - 0.5*s)
       }
-      # If SAL36 genotype is 11, do nothing (appending 1 would not change product)
+      # If SAL28 genotype is 11, do nothing (appending 1 would not change product)
       
-      # Repeat for SAL61
-      if(sum(pop[[i]][,61]) == 0){
+      # Repeat for SAL55
+      if(sum(pop[[i]][,55]) == 0){
         locus_fits <- append(locus_fits, 1 - s)
-      }else if(sum(pop[[i]][,61]) == 1){
+      }else if(sum(pop[[i]][,55]) == 1){
         locus_fits <- append(locus_fits, 1 - 0.5*s)
       }
-    # If the individual is a female...
+      # If the individual is a female...
     }else{
-      # If SAL36 genotype is 11, append 1-s36 to vector
-      if(sum(pop[[i]][,36]) == 2){
+      # If SAL28 genotype is 11, append 1-s to vector
+      if(sum(pop[[i]][,28]) == 2){
         locus_fits <- append(locus_fits, 1 - s)
-        # If SAL36 genotype is 01, append 1 - 0.5*s36 to vector
-      }else if(sum(pop[[i]][,36]) == 1){
+        # If SAL28 genotype is 01, append 1 - 0.5*s to vector
+      }else if(sum(pop[[i]][,28]) == 1){
         locus_fits <- append(locus_fits, 1 - 0.5*s)
       }
-      # If SAL36 genotype is 00, do nothing (appending 1 would not change product)
+      # If SAL28 genotype is 00, do nothing (appending 1 would not change product)
       
-      # Repeat for SAL61
-      if(sum(pop[[i]][,61]) == 2){
+      # Repeat for SAL55
+      if(sum(pop[[i]][,55]) == 2){
         locus_fits <- append(locus_fits, 1 - s)
-      }else if(sum(pop[[i]][,61]) == 1){
+      }else if(sum(pop[[i]][,55]) == 1){
         locus_fits <- append(locus_fits, 1 - 0.5*s)
       }
       
@@ -122,31 +122,76 @@ GetDFE <- function(){
 # 6 lay down mutations
 # mut_rate = mutation rate
 # pop = list of N genomes
-ActofGod <- function(pop, dfe){
+# fus.large: 
+#         T = fusions can occur only between sex and LARGE autosomes
+#         F = fusions can occur only between sex and SMALL autosomes
+ActofGod <- function(pop, dfe, fus.type, mu.table, fus.large){
   # Pick the individuals who get mutations, as well as the number of mutations
   # each mutated individual gets.
-  # Probabilities of each number of mutations were derived from the following code:
-  # as.data.frame(table(rbinom(n=100000, size=4*1587000,prob = 1.45*10^-8)))/100000
-  hit <- sample(0:3, size= length(pop), 
-                prob=c(0.91148, 0.08430, 0.00411, 0.00011),replace=T)
+  hit <- sample(0:3, size = length(pop), replace = T, prob = mu.table)
+  
+  # Get indices of males and females to later sample from
+  F.indx <- c()
+  M.indx <- c()
+  for(i in 1:length(pop)){
+    if(pop[[i]][2, 13]){
+      M.indx <- append(M.indx, i)
+    }else{
+      F.indx <- append(F.indx, i)
+    }
+  }
+  # Each generation has 10% chance of having 1 individual with a fusion
+  fuse.bool <- sample(0:1, size = 1, prob = c(0.9,0.1))
+  # If this is one of the generations with a fusion, randomly sample an 
+  # applicable chromosome (X or Y) to which the fusion should be introduced
+  if(fuse.bool){
+    if(fus.type == "X"){
+      # Choose whether a male (1) or female (0) gets the fusion. Females are
+      # 2x as likely to get X fusions because they have 2 X chr
+      fuse.sex <- sample(0:1, size = 1, prob = c(2, 1))
+      # Sample a random individual of the select sex
+      if(fuse.sex){
+        fuse.indv <- sample(M.indx, size = 1)
+        # If male was selected to be fused, sample only the X chr
+        fuse.chr <- 1
+      }else{
+        fuse.indv <- sample(F.indx, size = 1)
+        # If female was selected to be fused, sample 1 of the X chr
+        fuse.chr <- sample(1:2, size = 1)
+      }
+        
+      # Check if the sampled X is already fused
+      if(!pop[[fuse.indv]][fuse.chr, 25]){
+        # If not, introduce large or small fusion based on value of "fus.large"
+        if(fus.large){
+          pop[[fuse.indv]][fuse.chr, 25] <- 2
+        }else{
+          pop[[fuse.indv]][fuse.chr, 25] <- 1
+        }
+      }
+    # If only Y is permitted to have fusions, select a male, check if he already
+    # has a fusion, then introduce fusion to Y
+    }else if(fus.type == "Y"){
+      fuse.indv <- sample(M.indx, size = 1)
+      if(!pop[[fuse.indv]][2, 25]){
+        # introduce large or small fusion based on value of "fus.large"
+        if(fus.large){
+          pop[[fuse.indv]][2, 25] <- 2
+        }else{
+          pop[[fuse.indv]][2, 25] <- 1
+        }
+      }
+    }
+  }
   
   # Iterate through each individual
-  for(i in 1:length(pop)){
-    # TODO Currently, fused chromosomes cannot unfuse. Should I make it possible
-    # unfuse the chromosomes?
-    # 10% chance of fusion of either type
-    if(pop[[i]][1, 25] == 0){
-      pop[[i]][1, 25] <- sample(0:2, size = 1, replace = T, prob = c(0.8,0.1,0.1))
-    }
-    if(pop[[i]][2, 25] == 0){
-      pop[[i]][2, 25] <- sample(0:2, size = 1, replace = T, prob = c(0.8,0.1,0.1))
-    }
+  for(i in 1:length(hit)){
     # If this is a mutated individual, sample the indicated number of sites to
     # be mutated from the non-SDL, non-SAL
     if(hit[i]){
-      mut_sites <- sample((1:100)[-c(13,25,36,61)], size = hit[i], replace = F)
-    # At each site to be mutated, replace the value of a random homolog with
-    # a randomly-selected value from dfe
+      mut_sites <- sample((1:100)[-c(13,25,28,55)], size = hit[i], replace = F)
+      # At each site to be mutated, replace the value of a random homolog with
+      # a randomly-selected value from dfe
       pop[[i]][sample(1:2, size = 1, replace = F), mut_sites] <-
         sample(dfe, size = hit[i])
     }
@@ -164,10 +209,23 @@ Maury <- function(pop, fits, N = length(pop)){
       sexes[i] <- "mal"
     }
   }
-  moms <- sample((1:N)[sexes=="fem"], prob=fits[sexes=="fem"], 
-                 size=N, replace = T)
-  dads <- sample((1:N)[sexes=="mal"], prob=fits[sexes=="mal"], 
-                 size=N, replace = T)
+  # Checks to ensure that there is more than 1 female before sampling.
+  # If you don't have this check, you will get an "incorrect number of 
+  # probabilities" error in the event of a single female (same for males)
+  if(sum(sexes=="fem") > 1){
+    moms <- sample((1:N)[sexes=="fem"], prob=fits[sexes=="fem"], 
+                   size=N, replace = T)
+  }else{
+    moms <- rep((1:N)[sexes=="fem"], N)
+  }
+  
+  if(sum(sexes=="mal") > 1){
+    dads <- sample((1:N)[sexes=="mal"], prob=fits[sexes=="mal"], 
+                   size=N, replace = T)
+  }else{
+    dads <- rep((1:N)[sexes=="mal"], N)
+  }
+  
   parents <- list(moms,dads)
   names(parents) <- c("Moms","Dads")
   return(parents)
@@ -177,7 +235,6 @@ Maury <- function(pop, fits, N = length(pop)){
 # pop = list of genomes
 # parent = list of two sets of integers describing the individuals in pop who 
 # get to breed
-# PARb = Starting locus of pseudoautosomal region of the male sex chromosomes
 # Output (gametes) = list of two sets of vectors each describing the sequence
 # of a haploid gamete
 MakeGametes <- function(pop, parents, chiasm = T){
@@ -186,13 +243,13 @@ MakeGametes <- function(pop, parents, chiasm = T){
   
   # Iterate through each pair of parents
   for(i in 1:length(parents$Dads)){
-  # For male...
+    # For male...
     # If individual is chiasmatic...
     if(chiasm){
-      # Pick 3 random sites OTHER than 13, 36, and 61 in...
-        # PAR ((PARb+1):24)
-        # Autosome I (27:49)
-        # Autosome II (52-99)
+      # Pick 3 random sites OTHER than 13, 28, and 55 in...
+      # PAR (2:13), no recombination from 14:25
+      # Autosome I (27:49)
+      # Autosome II (52-99)
       # ... at which recombination occurs (recombination CANNOT occur at first or
       # final locus of a chromosome, so these loci are excluded)
       SexRec <- sample(2:13, 1)
@@ -246,13 +303,13 @@ MakeGametes <- function(pop, parents, chiasm = T){
       gametes$sperm[i] <- paste(c(pop[[parents$Dads[i]]][pick[1],1:25],
                                   pop[[parents$Dads[i]]][pick[2],26:50],
                                   pop[[parents$Dads[i]]][pick[3],51:100]), 
-                                                         collapse = ",")
+                                collapse = ",")
     }
-  # For female..
-    # Pick 3 random sites OTHER than 13, 36, and 61 in...
-      # Sex chromosome (2:24)
-      # Autosome I (27:49)
-      # Autosome II (52-99)
+    # For female..
+    # Pick 3 random sites OTHER than 13, 28, and 55 in...
+    # Sex chromosome (2:24)
+    # Autosome I (27:49)
+    # Autosome II (52-99)
     # ... at which recombination occurs (recombination CANNOT occur at first or
     # final locus of a chromosome, so these loci are excluded)
     SexRec <- sample(2:24, 1)
@@ -286,18 +343,18 @@ MakeGametes <- function(pop, parents, chiasm = T){
     # haploid genome, adding this genome to the list of gametes under "eggs"
     if(sum(pop[[parents$Moms[i]]][,25]) == 0){
       gametes$eggs[i] <- paste(c(sample(SexChrGametes, 1),
-                                  sample(Chr1Gametes, 1),
-                                  sample(Chr2Gametes, 1)), collapse = ",")
+                                 sample(Chr1Gametes, 1),
+                                 sample(Chr2Gametes, 1)), collapse = ",")
     }else if(1 %in% pop[[parents$Moms[i]]][,25]){
       pick <- sample(1:2, 1)
       gametes$eggs[i] <- paste(c(SexChrGametes[pick],
-                                  Chr1Gametes[pick],
-                                  sample(Chr2Gametes, 1)), collapse = ",")
+                                 Chr1Gametes[pick],
+                                 sample(Chr2Gametes, 1)), collapse = ",")
     }else if(2 %in% pop[[parents$Moms[i]]][,25]){
       pick <- sample(1:2, 1)
       gametes$eggs[i] <- paste(c(SexChrGametes[pick],
-                                  sample(Chr1Gametes, 1),
-                                  Chr2Gametes[pick]), collapse = ",")
+                                 sample(Chr1Gametes, 1),
+                                 Chr2Gametes[pick]), collapse = ",")
     }
   }
   
@@ -323,7 +380,7 @@ MiracleOfLife <- function(gametes){
     # sex
     newgen[[i]] <- matrix(as.numeric(c(strsplit(gametes$eggs[e], ",")[[1]],
                                        strsplit(gametes$sperm[s], ",")[[1]])),
-                                     nrow = 2, byrow = T)
+                          nrow = 2, byrow = T)
     gametes$eggs <- gametes$eggs[-e]
     gametes$sperm <- gametes$sperm[-s]
   }
@@ -334,9 +391,11 @@ MiracleOfLife <- function(gametes){
 # 8 return to step 2
 
 # Runs the simulation on "pop_size" number of individuals for "gen_no" 
-# generations with an SAL selection coefficient of "s" and a PAR beginning locus
-# of "PARb" and output the final population
-Evolve <- function(pop_size, gen_no, s, chiasm){
+# generations with an SAL selection coefficient of "s" 
+# fus.large: 
+#         T = fusions can occur only between sex and LARGE autosomes
+#         F = fusions can occur only between sex and SMALL autosomes
+Evolve <- function(pop_size, gen_no, s, chiasm, fus.type, mu.table, fus.large){
   # Get a new population
   pop <- GetPop(pop_size)
   
@@ -347,37 +406,26 @@ Evolve <- function(pop_size, gen_no, s, chiasm){
   # For each matrix...
   # Rows = Generations
   # Columns = Individuals
-  results <- vector(mode = "list", length = 5)
-  names(results) <- c("FusionLocus","SDR","SAL36","SAL61","TotalFitness")
-  results$FusionLocus <- matrix(nrow = 2*gen_no, ncol = pop_size, 
-                                dimnames = list(rep(c("X","X/Y"), gen_no), 1:pop_size))
-  results$SDR <- matrix(nrow = 2*gen_no, ncol = pop_size, 
-                        dimnames = list(rep(c("X","X/Y"), gen_no), 1:pop_size))
-  results$SAL36 <- matrix(nrow = 2*gen_no, ncol = pop_size, 
-                          dimnames = list(rep(c("X","X/Y"), gen_no), 1:pop_size))
-  results$SAL61 <- matrix(nrow = 2*gen_no, ncol = pop_size, 
-                          dimnames = list(rep(c("X","X/Y"), gen_no), 1:pop_size))
-  results$TotalFitness <- matrix(nrow = gen_no, ncol = pop_size, 
-                                 dimnames = list(1:gen_no, 1:pop_size))
-  # Create iterator for the TWO rows corresponding to the current population
-  gen_rows <- 1:2
+  results <- matrix(nrow = 4*gen_no, ncol = pop_size,
+                    dimnames = list(
+                      rep(c("X-SDR", "X/Y-SDR", "X-FuseLocus", "X/Y-FuseLocus"), 
+                          gen_no), 1:pop_size))
+  
+  # Create iterator for the FOUR rows corresponding to the current generation
+  gen_rows <- 1:4
   
   # For each generation in "gen_no"...
   for(gen in 1:gen_no){
     print(paste(c("Generation: ", gen), collapse = ""))
     
     # Mutate the starting population
-    pop <- ActofGod(pop, dfe)
+    pop <- ActofGod(pop, dfe, fus.type, mu.table, fus.large)
     
     # Assess the fitness of the mutated population
     fits <- GetFit(pop, s)
     # Add loci and fitnesses to corresponding generation in output
-    results$TotalFitness[gen,] <- fits
     for(i in 1:pop_size){
-      results$SDR[gen_rows, i] <- pop[[i]][,13]
-      results$FusionLocus[gen_rows, i] <- pop[[i]][,25]
-      results$SAL36[gen_rows, i] <- pop[[i]][,36]
-      results$SAL61[gen_rows, i] <- pop[[i]][,61]
+      results[gen_rows, i] <- c(pop[[i]][,13], pop[[i]][,25])
     }
     
     # Select parents based on the fitness
@@ -390,7 +438,7 @@ Evolve <- function(pop_size, gen_no, s, chiasm){
     pop <- MiracleOfLife(gametes)
     
     # Move to next two generation's rows
-    gen_rows <- gen_rows + 2
+    gen_rows <- gen_rows + 4
     
     # Continue to next round of mutation
     next
@@ -402,18 +450,13 @@ Evolve <- function(pop_size, gen_no, s, chiasm){
 
 # Run simulation multiple times, storing output of each run as a new element in
 # list
-runs <- 1000
-AchiasmaticResults <- vector(mode = "list", length = runs)
-ChiasmaticResults <- vector(mode = "list", length = runs)
-for(sim in 1:runs){
-  print(" ")
-  print(paste(c("Simulation: ", sim), collapse = ""))
-  print("Achiasmy")
-  AchiasmaticResults[[sim]] <- Evolve(1000,100,0.1,F)
-  print("Chiasmy")
-  ChiasmaticResults[[sim]] <- Evolve(1000,100,0.1,T)
-}
-
-saveRDS(AchiasmaticResults, "AchiasmaticResults.rds")
-saveRDS(ChiasmaticResults, "ChiasmaticResults.rds")
+runs <- 5
+pop_size <- 100
+gen_no <- 1000
+mu <- 0.00000001
+s <- 0.5
+# Get probabilities of 0, 1, 2, and 3 mutations in a generation
+mu.table <- as.data.frame(
+  table(rbinom(n=100000, size=4*1587000, prob = mu))
+)[1:4,2]/sum(as.data.frame(table(rbinom(n=100000, size=4*1587000, prob = mu)))[1:4,2])
 
