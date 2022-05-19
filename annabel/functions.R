@@ -235,7 +235,6 @@ Maury <- function(pop, fits, N = length(pop)){
   names(parents) <- c("Moms","Dads")
   return(parents)
 }
-
 # 4 make gametes
 # pop = list of genomes
 # parent = list of two sets of integers describing the individuals in pop who 
@@ -366,7 +365,6 @@ MakeGametes <- function(pop, parents, chiasm = T){
   # Return list of eggs and sperm
   return(gametes)
 }
-
 # 7 make next gen
 # gametes = List of strings describing the haplotypes of available eggs and
 # sperm where each locus' fitness value is separated by a comma

@@ -4,14 +4,12 @@ source("functions.R")
 # list
 runs <- 5
 pop_size <- 100
-gen_no <- 100
+gen_no <- 1000
 mu <- 0.00000001
 fus.type <- "Y"
 fus.large <- F
-s <- 0.5
+s <- 1
 # Get probabilities of 0, 1, 2, and 3 mutations in a generation
-
-
 
 
 pop <- GetPop(pop_size)
@@ -57,5 +55,3 @@ for(gen in 1:gen_no){
   # Move to next two generation's rows
   gen_rows <- gen_rows + 4
 }
-# Output final genome after this many generations
-return(results)
