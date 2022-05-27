@@ -2,7 +2,7 @@ library(viridisLite)
 library(ggplot2)
 
 ###################### Identify Appropriate mu and s ###########################
-setwd("/Users/knigh/Documents/GitHub/achiasmy-sims/results/Fusions/Apr16_2022")
+setwd("/Users/knigh/Documents/GitHub/achiasmy-sims/results/Fusions/")
 
 # Data from running simulation on...
 # A-_----:  Heterogametic sex is achiasmatic
