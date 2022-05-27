@@ -12,6 +12,11 @@
 # All other loci are general fitness loci with values from 0-1
 # reflecting their fitness. Fitness will be multiplicative
 
+# Fusions are indicated at locus 25 by having a:
+# 0 = no fusion
+# 1 = small fusion
+# 2 = large fusion
+
 # genotype at SA    male      female
 #  00                1-s      1
 #  01                1-.5s    1-.5s
@@ -125,7 +130,11 @@ GetDFE <- function(){
 # fus.large: 
 #         T = fusions can occur only between sex and LARGE autosomes
 #         F = fusions can occur only between sex and SMALL autosomes
-ActofGod <- function(pop, dfe, fus.type, mu.table, fus.large){
+ActofGod <- function(pop, dfe, fus.type, mu, fus.large){
+  mu.table <- as.data.frame(
+    table(rbinom(n=100000, size=4*1587000, prob = mu))
+  )[1:4,2]/sum(as.data.frame(table(rbinom(n=100000, size=4*1587000, prob = mu)))[1:4,2])
+  
   # Pick the individuals who get mutations, as well as the number of mutations
   # each mutated individual gets.
   hit <- sample(0:3, size = length(pop), replace = T, prob = mu.table)
@@ -160,6 +169,7 @@ ActofGod <- function(pop, dfe, fus.type, mu.table, fus.large){
   # }
   # Each generation has 10% chance of having 1 individual with a fusion
   fuse.bool <- sample(0:1, size = 1, prob = c(0.9,0.1))
+  fuse.bool <- F
   # If this is one of the generations with a fusion, randomly sample an 
   # applicable chromosome (X or Y) to which the fusion should be introduced
   if(fuse.bool){
@@ -447,9 +457,16 @@ Evolve <- function(pop_size, gen_no, s, chiasm, fus.type, mu.table, fus.large){
   # Output final genome after this many generations
   return(results)
 }
-mu <- 0.00000001
 
-mu.table <- as.data.frame(
-  table(rbinom(n=100000, size=4*1587000, prob = mu))
-)[1:4,2]/sum(as.data.frame(table(rbinom(n=100000, size=4*1587000, prob = mu)))[1:4,2])
+
+
+genotyper <- function(pop, locus){
+  one.count <- 0
+  for(i in 1:length(pop)){
+    one.count <- one.count + sum(pop[[i]][,locus])
+  }
+  one.count/(2*length(pop))
+}
+
+
 
