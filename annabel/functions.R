@@ -120,30 +120,36 @@ GetDFE <- function(){
 }
 
 # 6 lay down mutations
-# mut_rate = mutation rate
+# mu = mutation rate
 # pop = list of N genomes
 # fus.large: 
 #         T = fusions can occur only between sex and LARGE autosomes
 #         F = fusions can occur only between sex and SMALL autosomes
-ActofGod <- function(pop, dfe, fus.type, mu.table, fus.large){
-  # Pick the individuals who get mutations, as well as the number of mutations
-  # each mutated individual gets.
-  hit <- sample(0:3, size = length(pop), replace = T, prob = mu.table)
+ActofGod <- function(pop, dfe, fus.type, mu, fus.large){
+  # Initialize a vector to store sites which receive mutations
+  mut_sites <- rep(0, ncol(pop[[1]]))
   # Iterate through each individual
-  for(i in which(hit != 0)){
-    # If this is a mutated individual, sample the indicated number of sites to
-    # be mutated from the non-SDL, non-SAL
-      mut_sites <- sample((1:100)[-c(13,25,28,55)], size = hit[i], replace = F)
+  for(i in 1:length(pop)){
+    # Decide which sites in this individual, if any, get mutations
+    mut_sites[-c(13,25,28,55)] <- sample(0:1, size = (length(mut_sites) - 4), prob = c(1-mu, mu), replace = T)
+    # If the individual gets any mutations...
+    if(sum(mut_sites)){
       # At each site to be mutated, replace the value of a random homolog with
       # a randomly-selected value from dfe
-      pop[[i]][sample(1:2, size = 1, replace = F), mut_sites] <-
-        sample(dfe, size = hit[i])
+      
+      # In case Heath asks why you are LOOPING through all mutated sites:
+      # If you were to instead do this...
+      # pop[[i]][sample(1:2, size = 1), mut_sites[locus]]
+      # ...ALL mutations would be added to the SAME homolog (1 or 2)
+      for(locus in which(mut_sites == 1)){
+        pop[[i]][sample(1:2, size = 1), mut_sites[locus]] <-
+          sample(dfe, size = 1)
+      }
+    }
   }
   # Get indices of males and females to later sample from
   F.indx <- c()
   M.indx <- c()
-  
-  
   
   checker <- function(x){
     x[2,13] == 0
@@ -207,9 +213,7 @@ Maury <- function(pop, fits, N = length(pop)){
       sexes[i] <- "mal"
     }
   }
-  # Checks to ensure that there is more than 1 female before sampling.
-  # If you don't have this check, you will get an "incorrect number of 
-  # probabilities" error in the event of a single female (same for males)
+  
   if(sum(sexes=="fem") > 1){
     moms <- sample((1:N)[sexes=="fem"], prob=fits[sexes=="fem"], 
                    size=N, replace = T)
@@ -394,69 +398,47 @@ MiracleOfLife <- function(gametes){
 # fus.large: 
 #         T = fusions can occur only between sex and LARGE autosomes
 #         F = fusions can occur only between sex and SMALL autosomes
-Evolve <- function(pop_size, gen_no, s, chiasm, fus.type, mu.table, fus.large){
-  # Get a new population
-  pop <- GetPop(pop_size)
-  
-  # Get a distribution of fitness effects
-  dfe <- GetDFE()
-  
-  # Initialize list of matrices
-  # For each matrix...
-  # Rows = Generations
+Evolve <- function(num_sims, pop_size, gen_no, s, chiasm, fus.type, mu, fus.large){
+  # Initialize matrix to store final results
+  # Rows = Generation/SImulation combos
   # Columns = Individuals
-  results <- matrix(nrow = 4*gen_no, ncol = pop_size,
+  results <- matrix(nrow = 4*gen_no*num_sims, ncol = pop_size,
                     dimnames = list(
                       rep(c("X-SDR", "X/Y-SDR", "X-FuseLocus", "X/Y-FuseLocus"), 
-                          gen_no), 1:pop_size))
-  
-  # Create iterator for the FOUR rows corresponding to the current generation
-  gen_rows <- 1:4
-  
-  # For each generation in "gen_no"...
-  for(gen in 1:gen_no){
-    print(paste(c("Generation: ", gen), collapse = ""))
+                          gen_no*num_sims), 1:pop_size))
+  # Create iterator for the FOUR rows corresponding to the current gensim combo
+  gen_sims <- 1:4
+  for(sim in 1:num_sims){
+    print(paste("Simulation: ", sim, collapse = ""))
+    # Get a new population
+    pop <- GetPop(pop_size)
     
-    # Mutate the starting population
-    pop <- ActofGod(pop, dfe, fus.type, mu.table, fus.large)
+    # Get a distribution of fitness effects
+    dfe <- GetDFE()
     
-    # Assess the fitness of the mutated population
-    fits <- GetFit(pop, s)
-    # Add loci and fitnesses to corresponding generation in output
-    for(i in 1:pop_size){
-      results[gen_rows, i] <- c(pop[[i]][,13], pop[[i]][,25])
+    # For each generation in "gen_no"...
+    for(gen in 1:gen_no){
+      print(paste(c("Generation: ", gen), collapse = ""))
+      
+      # Mutate the starting population
+      pop <- ActofGod(pop, dfe, fus.type, mu, fus.large)
+      
+      # Assess the fitness of the mutated population
+      fits <- GetFit(pop, s)
+      # Add loci and fitnesses to corresponding generation in output
+      for(i in 1:pop_size){
+        results[gen_sims, i] <- c(pop[[i]][,13], pop[[i]][,25])
+      }
+      # Select parents based on the fitness
+      parents <- Maury(pop, fits, length(pop))
+      # Select gametes from these parents
+      gametes <- MakeGametes(pop, parents, chiasm=T)
+      # Breed the parents
+      pop <- MiracleOfLife(gametes)
+      # Move to next gen/sim combo
+      gen_sims <- gen_sims + 4
     }
-    
-    # Select parents based on the fitness
-    parents <- Maury(pop, fits, length(pop))
-    
-    # Select gametes from these parents
-    gametes <- MakeGametes(pop, parents, chiasm=T)
-    
-    # Breed the parents
-    pop <- MiracleOfLife(gametes)
-    
-    # Move to next two generation's rows
-    gen_rows <- gen_rows + 4
   }
-  # Output final genome after this many generations
+  # Output final genome after all sims and generations
   return(results)
 }
-mu <- 0.000000000001
-
-# Get count of the probabilities of diff counts of mutations
-count.probs <- as.data.frame(table(rbinom(n=100000, size=4*1587000, prob = mu)))
-# If there probability for all non-0 counts of mutations is not present in the
-# table, report those probabilities as 0
-if(nrow(count.probs) < 4){
-  table_length <- nrow(count.probs)
-  rows_needed <- 4 - table_length
-  addition <- data.frame(as.factor(nrow(count.probs):3), rep(0, rows_needed))
-  colnames(addition) <- colnames(count.probs)
-  new_count.probs <- rbind(count.probs, addition)
-  mu.table <- new_count.probs[1:4,2]/sum(new_count.probs[1:4,2])
-}else{
-  mu.table <- count.probs[1:4,2]/sum(count.probs[1:4,2])
-  
-}
-
