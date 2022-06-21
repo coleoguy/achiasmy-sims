@@ -9,8 +9,8 @@ setwd("/Users/knigh/Documents/GitHub/achiasmy-sims/annabel/")
 # Read in data from running simulations where...
 # 1. Males are chiasmatic
 # 2. Fusions can only occur between Y chromosomes and small (S) autosomes
-CYS_HmuLs.res <- readRDS("HmuLs_CYS_06-07-22.rds")
-CYS_LmuHs.res <- readRDS("LmuHs_CYS_06-07-22.rds")
+CYS_HmuLs.res <- readRDS("HmuLs_CYS_06-10-22.rds")
+CYS_LmuHs.res <- readRDS("LmuHs_CYS_06-10-22.rds")
 
 ############################## General Parameters ##############################
 # Number of simulations must be known a priori
