@@ -162,6 +162,10 @@ ActofGod <- function(pop, dfe, fus.type, mu, fus.large){
   # If this is one of the generations with a fusion, randomly sample an 
   # applicable chromosome (X or Y) to which the fusion should be introduced
   if(fuse.bool){
+  fuse.bool <- sample(0:1, size = 1, prob = c(0.5,0.5))
+  # If this is one of the generations with a fusion, randomly sample an 
+  # applicable chromosome (X or Y) to which the fusion should be introduced
+  if(fuse.bool){
     if(fus.type == "X"){
       # Choose whether a male (1) or female (0) gets the fusion. Females are
       # 2x as likely to get X fusions because they have 2 X chr
@@ -438,3 +442,4 @@ Evolve <- function(num_sims, pop_size, gen_no, s, chiasm, fus.type, mu, fus.larg
   return(results)
 }
 
+}
