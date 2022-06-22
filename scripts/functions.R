@@ -33,10 +33,11 @@
 # iter: number of trials to use
 # 
 
-# 1 make random starting genomes
+# 1 make starting genomes
 # Input the number of genomes, output a list where each entry is a genome
 GetPop <- function(N){
   pop <- vector(mode = "list", length = N)
+  
   for(i in 1:N){
     # Set all general fitness loci equal to 1
     pop[[i]] <- matrix(rep(1, 200), nrow = 2, ncol = 100)
@@ -44,6 +45,7 @@ GetPop <- function(N){
     # or female, but make it impossible to have 2 Y chromosomes
     pop[[i]][1,13] <- 0
     pop[[i]][2,13] <- sample(0:1, size = 1, replace = F, prob = rep(0.5,2))
+    
     # Start each individual with NO sex chr-autosome fusions
     pop[[i]][,25] <- 0
     
@@ -158,11 +160,8 @@ ActofGod <- function(pop, dfe, fus.type, mu, fus.large){
   females <- unlist(lapply(pop, FUN=checker))
   
   # Each generation has 10% chance of having 1 individual with a fusion
-  fuse.bool <- sample(0:1, size = 1, prob = c(0.9,0.1))
-  # If this is one of the generations with a fusion, randomly sample an 
-  # applicable chromosome (X or Y) to which the fusion should be introduced
-  if(fuse.bool){
-  fuse.bool <- sample(0:1, size = 1, prob = c(0.5,0.5))
+  # TODO change prob back to c(0.9,0.1)
+  fuse.bool <- sample(0:1, size = 1, prob = c(0,1))
   # If this is one of the generations with a fusion, randomly sample an 
   # applicable chromosome (X or Y) to which the fusion should be introduced
   if(fuse.bool){
@@ -180,7 +179,7 @@ ActofGod <- function(pop, dfe, fus.type, mu, fus.large){
         # If female was selected to be fused, sample 1 of the X chr
         fuse.chr <- sample(1:2, size = 1)
       }
-        
+      
       # Check if the sampled X is already fused
       if(!pop[[fuse.indv]][fuse.chr, 25]){
         # If not, introduce large or small fusion based on value of "fus.large"
@@ -190,8 +189,8 @@ ActofGod <- function(pop, dfe, fus.type, mu, fus.large){
           pop[[fuse.indv]][fuse.chr, 25] <- 1
         }
       }
-    # If only Y is permitted to have fusions, select a male, check if he already
-    # has a fusion, then introduce fusion to Y
+      # If only Y is permitted to have fusions, select a male, check if he already
+      # has a fusion, then introduce fusion to Y
     }else if(fus.type == "Y"){
       fuse.indv <- sample(which(!females), size = 1)
       if(!pop[[fuse.indv]][2, 25]){
@@ -205,6 +204,7 @@ ActofGod <- function(pop, dfe, fus.type, mu, fus.large){
     }
   }
   
+  # Return the population 
   return(pop)
 }
 
@@ -368,25 +368,55 @@ MakeGametes <- function(pop, parents, chiasm = T){
   return(gametes)
 }
 
-# 7 make next gen
+# 7 make next gen and store the count of X or Y chromosomes (based on the 
+# fusion type) to later calculate frequency of fusions
 # gametes = List of strings describing the haplotypes of available eggs and
 # sperm where each locus' fitness value is separated by a comma
 # newgen = List of matrices describing each of the new individuals
-MiracleOfLife <- function(gametes){
+MiracleOfLife <- function(gametes, fus.type){
   # New generation should be same size as number of couples
   newgen <- vector(mode = "list", length = length(gametes$eggs))
+  # Initialize the count of fusions passed to this population as 0.
+  total_fus <- 0
+  # Depending on the type of fusion which is possible in this population, 
+  # initialize total number chromosomes for frequency calculations as 0 or total
+  # number of X chromosomes as the population size (because every individual has
+  # at least one X and you later will add to this count based on whether each 
+  # individual has an X or a Y chromosome) 
+  if(fus.type == "Y"){
+    total_chr <- 0
+  }else if(fus.type == "X"){
+    total_chr <- length(gametes$eggs)
+  }
   
   # Scramble the order of the eggs and sperm to pick a mom and dad at random
   e <- sample(1:length(gametes$eggs))
   s <- sample(1:length(gametes$sperm))
   for(i in 1:length(newgen)){
     # Combine 1 gamete from each randomly selected parent
-    newgen[[i]] <- matrix(as.numeric(c(strsplit(gametes$eggs[e[i]], ",")[[1]],
-                                       strsplit(gametes$sperm[s[i]], ",")[[1]])),
-                          nrow = 2, byrow = T)
+    egg_genome <- strsplit(gametes$eggs[e[i]], ",")[[1]]
+    sperm_genome <- strsplit(gametes$sperm[s[i]], ",")[[1]]
+    newgen[[i]] <- matrix(as.numeric(c(egg_genome, sperm_genome)), 
+                                     nrow = 2, byrow = T)
+    # If locus at the SDR is a 1 and fusions can only occur to Y, iterate the 
+    # count of total Y by 1. 
+    if(newgen[[i]][2,13] & fus.type == "Y"){
+      total_chr <- total_chr + 1
+    }else if(!newgen[[i]][2,13] & fus.type == "X"){
+      # If this locus is an 0 and fusions can only occur to X, iterate count of 
+      # X chromosomes by 1
+      total_chr <- total_chr + 1
+    }
+    # If this offspring has fusions, iterate the total number of fusions by the
+    # COUNT of fusion
+    if(sum(newgen[[i]][,25])){
+      total_fus <- total_fus + sum(newgen[[i]][,25] > 0)
+    }
   }
   
-  return(newgen)
+  # Return population, total number of Y chromosomes or X chromosomes in this 
+  # new pop, and the count of fusions passed to this generation
+  return(list(newgen, total_chr, total_fus))
 }
 
 # 8 return to step 2
@@ -398,48 +428,53 @@ MiracleOfLife <- function(gametes){
 #         T = fusions can occur only between sex and LARGE autosomes
 #         F = fusions can occur only between sex and SMALL autosomes
 Evolve <- function(num_sims, pop_size, gen_no, s, chiasm, fus.type, mu, fus.large){
-  # Initialize matrix to store final results
-  # Rows = Generation/SImulation combos
-  # Columns = Individuals
-  results <- matrix(nrow = 4*gen_no*num_sims, ncol = pop_size,
-                    dimnames = list(
-                      rep(c("X-SDR", "X/Y-SDR", "X-FuseLocus", "X/Y-FuseLocus"), 
-                          gen_no*num_sims), 1:pop_size))
-  # Create iterator for the FOUR rows corresponding to the current gensim combo
-  gen_sims <- 1:4
+  # Initialize a matrix with as many rows as there are generations and as many
+  # columns as there are simulations
+  fusion_frequencies <- matrix(ncol = num_sims, nrow = gen_no, 
+                               dimnames = list(strsplit(paste(0:gen_no, collapse = ",Gen: "), ",")[[1]][-1]))
+  # Name columns by sims and rows by generations
+  colnames(fusion_frequencies) <- strsplit(paste(0:num_sims, collapse = ",Sim: "), ",")[[1]][-1]
+  
+  # Get a distribution of fitness effects
+  dfe <- GetDFE()
+  
   for(sim in 1:num_sims){
     print(paste("Simulation: ", sim, collapse = ""))
     # Get a new population
     pop <- GetPop(pop_size)
     
-    # Get a distribution of fitness effects
-    dfe <- GetDFE()
+    # Start the total number of fusions in this population at 0
+    total_fus <- 0
     
     # For each generation in "gen_no"...
     for(gen in 1:gen_no){
       print(paste(c("Generation: ", gen), collapse = ""))
       
-      # Mutate the starting population
+      # Mutate the starting population 
       pop <- ActofGod(pop, dfe, fus.type, mu, fus.large)
       
       # Assess the fitness of the mutated population
       fits <- GetFit(pop, s)
-      # Add loci and fitnesses to corresponding generation in output
-      for(i in 1:pop_size){
-        results[gen_sims, i] <- c(pop[[i]][,13], pop[[i]][,25])
-      }
       # Select parents based on the fitness
       parents <- Maury(pop, fits, length(pop))
       # Select gametes from these parents
       gametes <- MakeGametes(pop, parents, chiasm=T)
-      # Breed the parents
-      pop <- MiracleOfLife(gametes)
-      # Move to next gen/sim combo
-      gen_sims <- gen_sims + 4
+      # Breed the parents, record the total number of X or Y chr (depending
+      # on the type of fusions which are possible), and record the total number
+      # of fusions passed to the new population
+      MoL_output <- MiracleOfLife(gametes, fus.type)
+      pop <- MoL_output[[1]]
+      total_chr <- MoL_output[[2]]
+      total_fus <- MoL_output[[3]]
+      print(paste("Total Chromosomes: ", total_chr, " Total Fusions: ", total_fus), collapse = "")
+      # Calculate and store frequency fusions at this generation. The functions
+      # already account for the fact that the total number of chromosomes to
+      # which a fusion could possibly occur (stored in total_chr) varies based
+      # on the type of fusion (X or Y) possible in this run
+      fusion_frequencies[gen, sim] <- total_fus/total_chr
     }
   }
-  # Output final genome after all sims and generations
-  return(results)
+  # Output final frequencies after all sims and generations
+  return(fusion_frequencies)
 }
 
-}
