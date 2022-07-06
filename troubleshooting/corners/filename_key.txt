@@ -1,0 +1,43 @@
+Annabel Perry
+In this folder I have stored the frequency of fusions after running simulations with different combinations of meiotic type, fusion type, mutation rate, and selection coefficient.
+Goal: Ensure simulations show expected behaviors at each combination of high and low mu and s
+ 
+All simulations share the following parameters:
+
+number of simulations = 10
+population size = 1000
+number of generations = 1000
+
+Files are named based on the unique combination of parameters:
+
+Type of meiosis:
+C = Chiasmatic
+A = Achiasmatic
+
+Type of fusions:
+Y = Fusions can only occur between Y-chromosome and below-specified autosome
+X = Fusions can only occur between X-chromosome and below-specified autosome
+
+S = Fusions can only occur between above-specified sex chromosome and small autosome
+L = Fusions can only occur between above-specified sex chromosome and large autosome
+
+Folder Contents:
+/06-23-2022 Plots of the frequency of fusions after running each possible combination of meiotic 
+		and fusion parameters with high mu + low s and low s + high mu. Found that fusions
+		of large-sex fixed sooner than fusions of small-sex. Troubleshooted this error and
+		found a bug which made it such that mutations could ONLY be introduced to locus 1
+		of sex chromosome.
+
+/06-27-2022 Fixed the bug where mutations could ONLY be introduced to locus 1 of sex chromosome 
+		and reran with each possible combination of meiotic and fusion parameters with high 
+		mu + low s and low s + high mu.
+
+
+Extreme
+Hmu = high mutation rate = 10^-6
+Lmu = low mutation rate = 10^-14
+
+Hs = high selection coefficient = 0.3
+Ls = low selection coefficient = 0.0001
+
+The results of these  simulations are plotted in freq_by_gen_plots.R

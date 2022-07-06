@@ -1,0 +1,673 @@
+    1  g++
+    2  sudo apt install g++
+    3  apt get-update
+    4  apt-get update
+    5  sudo apt-get update
+    6  sudo apt install g++
+    7  cd /mnt/c/Users/knigh/OneDrive/Documents/Summer\ 2021/RosenthalLabSum21/
+    8  g++ Test_HaploFinder2.cpp 
+    9  cd /mnt/c/Users/knigh/OneDrive/Documents/Summer\ 2021/RosenthalLabSum21/
+   10  g++ Test_HaploFinder2.cpp 
+   11  ./a.out 
+   12  g++ Test_HaploFinder2.cpp 
+   13  ./a.out 
+   14  g++ Test_HaploFinder2.cpp 
+   15  ./a.out 
+   16  g++ Test_HaploFinder2.cpp 
+   17  ./a.out 
+   18  g++ Test_HaploFinder2.cpp 
+   19  ./a.out 
+   20  g++ Test_HaploFinder2.cpp 
+   21  ./a.out 
+   22  g++ Test_HaploFinder2.cpp 
+   23  ./a.out 
+   24  g++ Test_HaploFinder2.cpp 
+   25  ./a.out 
+   26  g++ Test_HaploFinder2.cpp 
+   27  ./a.out 
+   28  g++ Test_HaploFinder2.cpp 
+   29  ./a.out 
+   30  g++ Test_HaploFinder2.cpp 
+   31  ./a.out 
+   32  g++ Test_HaploFinder2.cpp 
+   33  cd /mnt/c/Users/knigh/OneDrive/Documents/Summer\ 2021/RosenthalLabSum21/
+   34  g++ Test_HaploFinder2.cpp 
+   35  ./a.out 
+   36  g++ Test_HaploFinder2.cpp 
+   37  ./a.out 
+   38  cd /mnt/c/Users/knigh/OneDrive/Documents/Summer\ 2021/RosenthalLabSum21/
+   39  g++ test.cpp 
+   40  ./a.out 
+   41  g++ test.cpp 
+   42  ./a.out 
+   43  cd /mnt/c/Users/knigh/OneDrive/Documents/Summer\ 2021/FAU\ 2021/Duboue\ Project/EthogramDataAndGraphs/
+   44  file Pachon7HumanDLCAnnotations.csv 
+   45  dos2unix Pachon7HumanDLCAnnotations.csv 
+   46  cd /mnt/c/Users/knigh/OneDrive/Documents/Spring\ 2021/RosenthalLab/Official_Polly_Records/
+   47  gunzip Polly_birch_PostHoc.txt.gz 
+   48  head Polly_birch_PostHoc.txt 
+   49  cd /mnt/c/Users/knigh/OneDrive/Documents/Summer\ 2021/RosenthalLabSum21/
+   50  ll
+   51  cd PollyRWrapping/
+   52  ll
+   53  cd mypackage/
+   54  R CMD INSTALL -l /mnt/c/Users/knigh/OneDrive/Documents/R/win-library/4.0 mypackage_1.0.tar.gz
+   55  cd /mnt/c/Users/knigh/OneDrive/Documents/Summer\ 2021/RosenthalLabSum21/PollyRWrapping/
+   56  g++ PollyMicrosTest.cpp
+   57  ./a.out 
+   58  g++ PollyMicrosTest.cpp
+   59  ./a.out 
+   60  cd C:\Users\knigh\OneDrive\Documents\Summer 2021\RosenthalLabSum21\PollyRWrapping\
+   61  cd C:\Users\knigh\OneDrive\Documents\Summer 2021\RosenthalLabSum21\PollyRWrapping
+   62  cd /mnt/c/Users/knigh/OneDrive/Documents/Summer\ 2021/RosenthalLabSum21/PollyRWrapping/
+   63  g++ seqan_test.cpp
+   64  sudo apt install libseqan2-dev
+   65  g++ seqan_test.cpp
+   66  ./a.out 
+   67  cd /mnt/d/
+   68  cd /mnt/c/Users/knigh/Downloads/
+   69  gunzip xiphophorus_birchmanni_10x_12Sep2018_yDAA6.fasta.gz 
+   70  ssh annabelperry@terra.tamu.edu
+   71  cd /mnt/c/Users/knigh/OneDrive/Documents/Summer\ 2021/RosenthalLabSum21/SNPHaplotypes/
+   72  g++ GLDPostHoc2.cpp 
+   73  ./a.out 
+   74  g++ GLDPostHoc2.cpp 
+   75  ./a.out 
+   76  cd /mnt/c/Users/knigh/Documents/GitHub/Polly/
+   77  ./configure
+   78  ll
+   79  autoconf
+   80  sudo apt install autoconf
+   81  autoconf
+   82  ./configure
+   83  cd ../
+   84  R CMD build Polly 
+   85  R CMD check Polly_0.1.0.tar.gz 
+   86  R CMD INSTALL Polly_0.1.0.tar.gz 
+   87  R
+   88  ssh username@terra-ftn1.tamu.edu
+   89  ssh annabelperry@terra-ftn1.tamu.edu
+   90  ssh annabelperry@grace-ftn1.tamu.edu
+   91  ssh annabelperry@grace-ftn.tamu.edu
+   92  ssh annabelperry@terra-ftn.tamu.edu
+   93  ssh annabelperry@terra-ftn.hprc.tamu.edu
+   94  cd /var/cache/pacman/pkg/
+   95  ll
+   96  cd R/
+   97  ll
+   98  cd /mnt/c/Users/knigh/OneDrive/Documents/Fall\ 2021/RosenthalLab/
+   99  g++ RAMUsage.cpp 
+  100  ./a.out 
+  101  cd /mnt/c/Users/knigh/OneDrive/Documents/Fall\ 2021/RosenthalLab/
+  102  g++ RAMUsage.cpp 
+  103  ./a.out 
+  104  g++ RAMUsage.cpp 
+  105  ./a.out 
+  106  g++ RAMUsage.cpp 
+  107  ./a.out 
+  108  g++ RAMUsage.cpp 
+  109  ./a.out 
+  110  cd /mnt/c/Users/knigh/OneDrive/Documents/Fall\ 2021/RosenthalLab/
+  111  g++ test.cpp 
+  112  ./a.out 
+  113  g++ test.cpp 
+  114  ./a.out 
+  115  g++ test.cpp 
+  116  ./a.out 
+  117  g++ test.cpp 
+  118  ./a.out 
+  119  g++ test.cpp 
+  120  ./a.out 
+  121  g++ test.cpp 
+  122  ./a.out 
+  123  g++ test.cpp 
+  124  ./a.out 
+  125  g++ test.cpp 
+  126  ./a.out 
+  127  g++ test.cpp 
+  128  ./a.out 
+  129  g++ test.cpp 
+  130  ./a.out 
+  131  g++ MicroGenotyperSeqEdits.cpp -Ihtslib -Lhtslib -lhts
+  132  cd /mnt/c/Users/knigh/OneDrive/Documents/Fall\ 2021/RosenthalLab/
+  133  g++ MicroGenotyperSeqEdits.cpp -Ihtslib -Lhtslib -lhts
+  134  g++ test.cpp 
+  135  ./a.out 
+  136  g++ test.cpp 
+  137  ./a.out 
+  138  g++ test.cpp 
+  139  ./a.out 
+  140  g++ test.cpp 
+  141  ./a.out 
+  142  g++ test.cpp 
+  143  cd /mnt/c/Users/knigh/Downloads/
+  144  gunzip Astyanax_mexicanus.Astyanax_mexicanus-2.0.104.gtf.gz 
+  145  cd /mnt/c/Users/knigh/OneDrive/Documents/Fall\ 2021/Capstone/ShinyInputData/
+  146  g++ GOTermTableMaker.cpp 
+  147  ./a.out 
+  148  g++ GOTermTableMaker.cpp 
+  149  ./a.out 
+  150  cd /mnt/c/Users/knigh/OneDrive/Documents/Spring\ 2021/RosenthalLab/
+  151  gzip Xbirchmanni_edited_reference_genome.zip 
+  152  cd /mnt/c/Users/knigh/OneDrive/Documents/Fall\ 2021/RosenthalLab/
+  153  g++ PollyReformat.cpp 
+  154  ./a.out 
+  155  file Polly_mal_PostHoc.txt 
+  156  cat Polly_mal_PostHoc.txt -T | head -10
+  157  ./a.out 
+  158  g++ PollyReformat.cpp 
+  159  ./a.out 
+  160  g++ PollyReformat.cpp 
+  161  ./a.out 
+  162  g++ PollyReformat.cpp 
+  163  ./a.out 
+  164  g++ PollyReformat.cpp 
+  165  ./a.out 
+  166  cd /mnt/c/Users/knigh/Downloads/
+  167  gunzip fixed_in_malinche.vcf.gz 
+  168  head fixed_in_malinche.vcf 
+  169  head -30 fixed_in_malinche.vcf 
+  170  head -50 fixed_in_malinche.vcf 
+  171  tail fixed_in_malinche.vcf 
+  172  cd /mnt/c/Users/knigh/OneDrive/Documents/Fall\ 2021/RosenthalLab/
+  173  g++ test.cpp 
+  174  ./a.out 
+  175  cd /mnt/c/Users/knigh/OneDrive/Documents/Fall\ 2021/RosenthalLab/
+  176  g++ MicroSNPFinalFilter.cpp 
+  177  ./a.out 
+  178  g++ MicroSNPFinalFilter.cpp 
+  179  ./a.out 
+  180  g++ MicroSNPFinalFilter.cpp 
+  181  ./a.out 
+  182  g++ MicroSNPFinalFilter.cpp 
+  183  ./a.out 
+  184  g++ MicroSNPFinalFilter.cpp 
+  185  ./a.out 
+  186  g++ MicroSNPFinalFilter.cpp 
+  187  ./a.out 
+  188  g++ MicroSNPFinalFilter.cpp 
+  189  ./a.out 
+  190  g++ MicroSNPFinalFilter.cpp 
+  191  ./a.out 
+  192  g++ MicroSNPFinalFilter.cpp 
+  193  ./a.out 
+  194  sed -i 's/ /\t/g' birch_micros_only.csv 
+  195  sed -i 's/\t/ /g' birch_micros_only.csv 
+  196  sed -i 's/ /\t/g' MalFixedSNPs.txt 
+  197  sed -i 's/\r\n/\n/g' MalFixedSNPs.txt 
+  198  ./a.out 
+  199  g++ MicroSNPFinalFilter.cpp 
+  200  ./a.out 
+  201  g++ MicroSNPFinalFilter.cpp 
+  202  ./a.out 
+  203  cd /mnt/c/Users/knigh/OneDrive/Documents/Fall\ 2021/RosenthalLab/
+  204  g++ MicroSNPFinalFilter.cpp 
+  205  ./a.out 
+  206  cd /mnt/c/Users/knigh/OneDrive/Documents/Fall\ 2021/Capstone/ShinyInputData/
+  207  g++ GOTermNamespaceFinder.cpp 
+  208  ./a.out 
+  209  g++ GOTermNamespaceFinder.cpp 
+  210  ./a.out 
+  211  g++ GOTermNamespaceFinder.cpp 
+  212  ./a.out 
+  213  g++ GOTermNamespaceFinder.cpp 
+  214  ./a.out 
+  215  g++ GOTermNamespaceFinder.cpp 
+  216  ./a.out 
+  217  g++ GOTermNamespaceFinder.cpp 
+  218  ./a.out 
+  219  cd /mnt/c/Users/knigh/OneDrive/Documents/Fall\ 2021/RosenthalLab/
+  220  g++ microsat_length_filter.cpp 
+  221  ./a.out 
+  222  g++ MicroSNPFinalFilter.cpp 
+  223  ./a.out 
+  224  cd /mnt/c/Users/knigh/OneDrive/Documents/Fall\ 2021/RosenthalLab/
+  225  g++ MicroSNPFinalFilter.cpp 
+  226  ./a.out 
+  227  cd /mnt/c/Users/knigh/Documents/GitHub/AstyanaxShinyApp/d
+  228  cd /mnt/c/Users/knigh/Documents/GitHub/AstyanaxShinyApp/data
+  229  gunzip uniprot-proteome_UP000018467.xlsx.gz 
+  230  pip install simba-uw-tf
+  231  sudo apt install python3-pip
+  232  sudo apt install python3-pip --fix-missing
+  233  pip install python-3.6.0
+  234  sudo apt install python3-pip --fix-missing
+  235  pip install simba-uw-tf
+  236  pip install simba-uw
+  237  pip install simba
+  238  cd /home/annabelperry/.local/
+  239  ll
+  240  cd bin/
+  241  ll
+  242  simba
+  243  sudo apt install simba
+  244  python simba
+  245  python3 simba
+  246  simba
+  247  sudo apt install simba
+  248  sudo apt install simba --fix-missing
+  249  simba
+  250  ssh annabelperry@grace-ftn1.tamu.edu
+  251  ssh annabelperry@terra-ftn1.tamu.edu
+  252  scp -p annabelperry@terra.tamu.edu:/scratch/user/annabelperry/sratoolkit/aligned_SRR6649368.bam MalToBirch_SRR6649368.bam
+  253  scp -p MalToBirch_SRR6649368.bam annabelperry@grace.tamu.edu:/scratch/user/annabelperry/HomologousMicros/MalToBirch_SRR6649368.bam
+  254  scp -p annabelperry@terra.tamu.edu:/scratch/user/annabelperry/sratoolkit/aligned_SRR6649368.bai MalToBirch_SRR6649368.bai
+  255  scp -p annabelperry@terra.tamu.edu:/scratch/user/annabelperry/sratoolkit/aligned_SRR6649369.bam MalToBirch_SRR6649369.bam
+  256  scp -p annabelperry@terra.tamu.edu:/scratch/user/annabelperry/sratoolkit/aligned_SRR6649369.bai MalToBirch_SRR6649369.bai
+  257  scp -p annabelperry@terra.tamu.edu:/scratch/user/annabelperry/sratoolkit/aligned_SRR791885.bam MalToBirch_SRR791885.bam  
+  258  scp -p annabelperry@terra.tamu.edu:/scratch/user/annabelperry/sratoolkit/aligned_SRR791885.bai MalToBirch_SRR791885.bai
+  259  scp -p MalToBirch_SRR6649368.bai annabelperry@grace.tamu.edu:/scratch/user/annabelperry/HomologousMicros/MalToBirch_SRR6649368.bai
+  260  scp -p MalToBirch_SRR6649369.bam annabelperry@grace.tamu.edu:/scratch/user/annabelperry/HomologousMicros/MalToBirch_SRR6649369.bam
+  261  scp -p MalToBirch_SRR6649369.bai annabelperry@grace.tamu.edu:/scratch/user/annabelperry/HomologousMicros/MalToBirch_SRR6649369.bai
+  262  scp -p MalToBirch_SRR791885.bam annabelperry@grace.tamu.edu:/scratch/user/annabelperry/HomologousMicros/MalToBirch_SRR791885.bam 
+  263  scp -p MalToBirch_SRR791885.bai annabelperry@grace.tamu.edu:/scratch/user/annabelperry/HomologousMicros/MalToBirch_SRR791885.bai
+  264  scp -p annabelperry@grace.tamu.edu:/scratch/user/annabelperry/HomologousMicros/PollyMicros_MalToBirch.csv PollyMicros_MalToBirch.csv 
+  265  ll
+  266  rm MalToBirch_SRR*
+  267  ll
+  268  mv PollyMicros_MalToBirch.csv C:\Users\knigh\OneDrive\Documents\Fall 2021\RosenthalLab
+  269  mv PollyMicros_MalToBirch.csv C:\Users\knigh\OneDrive\Documents\
+  270  ll
+  271  mv C:UsersknighOneDriveDocuments PollyMicros_MalToBirch.csv
+  272  ll
+  273  mv PollyMicros_MalToBirch.csv c/mnt/Users/knigh/OneDrive/Documents
+  274  mv PollyMicros_MalToBirch.csv /mnt/c/Users/knigh/OneDrive/Documents/Fall\ 2021/RosenthalLab
+  275  cd /mnt/c/Users/knigh/OneDrive/Documents/Fall\ 2021/RosenthalLab/
+  276  g++ test.cpp 
+  277  ./a.out 
+  278  g++ microsat_length_filter_MalToBirch.cpp 
+  279  ./a.out 
+  280  g++ MicroSNPFinalFilter.cpp 
+  281  ./a.out 
+  282  g++ microsat_length_filter_MalToBirch.cpp 
+  283  ./a.out 
+  284  g++ MicroSNPFinalFilter.cpp 
+  285  ./a.out 
+  286  scp -p annabelperry@terra.tamu.edu:/scratch/user/annabelperry/INTRAspecific/birch_INTRA/
+  287  scp -p annabelperry@terra.tamu.edu:/scratch/user/annabelperry/INTRAspecific/birch_INTRA/aligned_SRR6511793.bai
+  288  scp -p annabelperry@terra.tamu.edu:/scratch/user/annabelperry/INTRAspecific/birch_INTRA/aligned_SRR6511793.bai aligned_SRR6511793.bai
+  289  scp -p aligned_SRR6511793.bai annabelperry@grace.tamu.edu:/scratch/user/annabelperry/sratoolkit/[ ] Rearrange discussion
+  290  scp -p aligned_SRR6511793.bai annabelperry@grace.tamu.edu:/scratch/user/annabelperry/sratoolkit/aligned_SRR6511793.bai
+  291  ll
+  292  rm birchmanni.frq 
+  293  scp -p annabelperry@terra.tamu.edu:/scratch/user/annabelperry/sratoolkit/aligned_SRR6509133.bam aligned_SRR6509133.bam
+  294  scp -p annabelperry@terra.tamu.edu:/scratch/user/annabelperry/INTRAspecific/birch_INTRA/aligned_SRR6509133.bam aligned_SRR6509133.bam
+  295  scp -p annabelperry@terra.tamu.edu:/scratch/user/annabelperry/INTRAspecific/birch_INTRA/aligned_SRR6511793.bam aligned_SRR6511793.bam
+  296  scp -p aligned_SRR6511793.bam annabelperry@grace.tamu.edu:/scratch/user/annabelperry/sratoolkit/aligned_SRR6511793.bam
+  297  rm aligned_SRR6511793.bam
+  298  rm aligned_SRR6511793.bai 
+  299  rm aligned_SRR6509133.bam 
+  300  cd /mnt/c/Users/knigh/Downloads/
+  301  g++ test.cpp 
+  302  cd /mnt/c/Users/knigh/Downloads/
+  303  g++ PollyMemoryEdits.cpp -Ihtslib -Lhtslib -lhts
+  304  cd /mnt/c/Users/knigh/Downloads/
+  305  g++ PollyMemoryEdits.cpp -Ihtslib -Lhtslib -lhts
+  306  cd /mnt/c/Users/knigh/Documents/GitHub/
+  307  cd Polly/
+  308  autoconf
+  309  ./configure
+  310  cd ../
+  311  R CMD build Polly 
+  312  R CMD check Polly_0.1.0.tar.gz 
+  313  cd /mnt/c/Users/knigh/Documents/GitHub/Polly
+  314  ./cleanup 
+  315  ll
+  316  echo $PKG_CONFIG_PATH
+  317  autoconf
+  318  ./configure
+  319  cd ../
+  320  R CMD build Polly
+  321  tar -vxf Polly_0.1.0.tar.gz 
+  322  R
+  323  cd Polly
+  324  autoconf
+  325  ./configure
+  326  cd ../
+  327  R
+  328  rm Polly_0.1.0.tar.gz 
+  329  R CMD build Polly
+  330  R
+  331  cd /mnt/c/Users/knigh/OneDrive/Documents/Spring\ 2022/RosenthalLab/
+  332  R
+  333  cd /mnt/c/Users/knigh/Documents/GitHub/Polly
+  334  ./cleanup 
+  335  autoconf
+  336  ./configure
+  337  cd ../
+  338  R CMD build Polly
+  339  R
+  340  cd /mnt/c/Users/knigh/OneDrive/Documents/Spring\ 2022/RosenthalLab/
+  341  R
+  342  cd /mnt/c/Users/knigh/Documents/GitHub/
+  343  ll
+  344  scp -r Polly annabelperry@grace.tamu.edu:/home/annabelperry/
+  345  sudo apt-get install unrar
+  346  ll
+  347  cd /c/mnt/Users/knigh/OneDrive/Documents/Spring\ 2022/ResearchApplications/
+  348  cd /mnt/c/Users/knigh/OneDrive/Documents/Spring\ 2022/ResearchApplications/
+  349  unrar e Special_Elite/
+  350  cd /mnt/c/Users/knigh/Downloads/
+  351  ll
+  352  tail 1 SRR18089323.sam 
+  353  grep "NC_003070.9" SRR18089323.sam 
+  354  scp annabelperry@grace.tamu.edu:/scratch/user/annabelperry/PollyArabidopsisAccuracy/SRR18089324.sam /mnt/c/Users/knigh/OneDrive/Documents/Spring\ 2022/RosenthalLab/
+  355  cd /mnt/c/Users/knigh/OneDrive/Documents/Spring\ 2022/RosenthalLab/
+  356  sed -i 1,10d SRR18089322.sam 
+  357  cd /mnt/c/Users/knigh/OneDrive/Documents/Spring\ 2022/RosenthalLab/
+  358  head -10 SRR18089323.sam
+  359  tail -n +10 SRR18089323.sam  > nohead_SRR18089323.txt
+  360  tail -n +10 SRR18089323.sam
+  361  cd /mnt/c/Users/knigh/OneDrive/Documents/Spring\ 2022/RosenthalLab/
+  362  tail -n +10 SRR18089323.sam
+  363  tail -n +10 SRR18089324.sam > nohead_SRR18089324.sam
+  364  tail -n +10 SRR18089324.sam > nohead_SRR18089324.txt
+  365  cd /mnt/c/Users/knigh/OneDrive/Documents/Spring\ 2022/RosenthalLab/
+  366  grep "NC_003070.9" SRR18089322.sam | tail
+  367  tail SRR18089322.sam
+  368  tail 30 SRR18089322.sam
+  369  tail -30 SRR18089322.sam
+  370  head SRR18089322.sam
+  371  head -8 SRR18089322.sam
+  372  head -9 SRR18089322.sam
+  373  head -10 SRR18089322.sam
+  374  tail -n +10 SRR18089322.sam  > nohead_SRR18089322.txt
+  375  cd /mnt/c/Users/knigh/OneDrive/Documents/Spring\ 2022/RosenthalLab/
+  376  head nohead_SRR1808932
+  377  head nohead_SRR18089322.txt 
+  378  head -1 nohead_SRR18089322.txt 
+  379  cat ^cat -T nohead_SRR18089322.txt 
+  380  cd /mnt/c/Users/knigh/OneDrive/Documents/Spring\ 2022/RosenthalLab/
+  381  wc -l nohead_SRR18089322.txt 
+  382  cd /mnt/c/Users/knigh/OneDrive/Documents/Spring\ 2022/RosenthalLab/
+  383  scp annabelperry@grace.tamu.edu:/scratch/user/annabelperry/PollyArabidopsisAccuracy/aligned_SRR18089323.bam /mnt/c/Users/knigh/OneDrive/Documents/Spring\ 2022/RosenthalLab/
+  384  scp annabelperry@grace.tamu.edu:/scratch/user/annabelperry/PollyArabidopsisAccuracy/aligned_SRR18089323.bai /mnt/c/Users/knigh/OneDrive/Documents/Spring\ 2022/RosenthalLab/
+  385  cd /mnt/c/Users/knigh/OneDrive/Documents/Spring\ 2022/RosenthalLab/
+  386  scp mini.sam annabelperry@grace.tamu.edu:/scratch/user/annabelperry/PollyArabidopsisAccuracy/
+  387  scp annabelperry@grace.tamu.edu:/scratch/user/annabelperry/PollyArabidopsisAccuracy/Polly_mini.bai /mnt/c/Users/knigh/OneDrive/Documents/Spring\ 2022/RosenthalLab/
+  388  scp annabelperry@grace.tamu.edu:/scratch/user/annabelperry/PollyArabidopsisAccuracy/Polly_mini.bam /mnt/c/Users/knigh/OneDrive/Documents/Spring\ 2022/RosenthalLab/
+  389  g++ test_Polly.cpp 
+  390  scp Polly_mini.sam annabelperry@grace.tamu.edu:/scratch/user/annabelperry/PollyArabidopsisAccuracy/
+  391  cd /mnt/c/Users/knigh/Documents/GitHub/
+  392  R CMD build Polly
+  393  R
+  394  cd /mnt/c/Users/knigh/OneDrive/Documents/Spring\ 2022/RosenthalLab/
+  395  file ArabidopsisLookup.csv 
+  396  cd /mnt/c/Users/knigh/Documents/GitHub/
+  397  cd Polly
+  398  cd src/
+  399  ll
+  400  file Makevars.in 
+  401  file Polly.
+  402  file Polly.cpp 
+  403  file Polly.h 
+  404  file RcppExports.cpp 
+  405  dos2unix Makevars.in 
+  406  sudo apt install dos2unix
+  407  dos2unix Makevars.in 
+  408  dos2unix RcppExports.cpp 
+  409  dos2unix Polly.h 
+  410  dos2unix Polly.cpp 
+  411  cd ../
+  412  ll
+  413  file .Rbuildignore 
+  414  dos2unix .
+  415  find . -type f -print0 | xargs -0 dos2unix
+  416  ll
+  417  file .Rbuildignore 
+  418  cd ../
+  419  R CMD build Polly
+  420  R
+  421  cd /mnt/c/Users/knigh/Documents/Test
+  422  file app.R 
+  423  dos2unix app.R 
+  424  cd /mnt/c/Users/knigh/Documents/Test
+  425  cd ../GitHub/Polly
+  426  ll
+  427  cd ../
+  428  file Polly/configure
+  429  ./Polly/cleanup 
+  430  cd Polly
+  431  ll
+  432  rm .Rbuildignore 
+  433  rm .Rhistory 
+  434  rm .git
+  435  rm -r .git
+  436  y
+  437  ll
+  438  rm -r .github/
+  439  rm -r .Rproj.user/
+  440  dos2unix *
+  441  ll
+  442  file DESCRIPTION 
+  443  cd R
+  444  ll
+  445  file PollyRFunctions.R 
+  446  file RcppExports.R 
+  447  cd ../ src/
+  448  cd ../src/
+  449  ll
+  450  file Makevars.in 
+  451  dos2unix *
+  452  cd ../../
+  453  ll
+  454  R CMD BUILD Polly
+  455  R CMD build Polly
+  456  ll
+  457  R CMD INSTALL Polly_0.1.0.tar.gz 
+  458  cd /mnt/c/Users/knigh/OneDrive/Documents/Spring\ 2022/RosenthalLab/
+  459  dos2unix *
+  460  cd /mnt/c/Users/knigh/OneDrive/Documents/Spring\ 2022/RosenthalLab/
+  461  file MGAccuracy.R 
+  462  dos2unix MGAccuracy.R 
+  463  file ArabidopsisLookup.csv 
+  464  g++ MG.cpp 
+  465  g++ MG.cpp -Ihtslib -Lhtslib -lhts 
+  466  ./a.out 
+  467  scp -p annabelperry@grace.tamu.edu:/scratch/user/annabelperry/PollyArabidopsisAccuracy/Polly_mini.bam.bai /mnt/c/Users/knigh/OneDrive/Documents/Spring\ 2022/RosenthalLab/
+  468  g++ MG.cpp -Ihtslib -Lhtslib -lhts 
+  469  ./a.out 
+  470  g++ MG.cpp -Ihtslib -Lhtslib -lhts 
+  471  ./a.out 
+  472  scp -p annabelperry@grace.tamu.edu:/scratch/user/annabelperry/sratoolkit/aligned_SRR6511793.bai /mnt/c/Users/knigh/OneDrive/Documents/Spring\ 2022/RosenthalLab/
+  473  scp -p annabelperry@grace.tamu.edu:/scratch/user/annabelperry/sratoolkit/aligned_SRR6511793.bam /mnt/c/Users/knigh/OneDrive/Documents/Spring\ 2022/RosenthalLab/
+  474  cd /mnt/c/Users/knigh/Documents/GitHub/achiasmy-sims/
+  475  cd scripts/
+  476  dos2unix sizes.R 
+  477  file sizes.R 
+  478  cd /mnt/c/Users/knigh/Documents/GitHub/achiasmy-sims/scripts/
+  479  scp -p sizes.R annabelperry@terra.tamu.edu:/scratch/user/annabelperry/
+  480  cd /mnt/c/Users/knigh/Documents/MGTest
+  481  autoconf
+  482  ./cleanup 
+  483  autoconf
+  484  ./configure
+  485  ll
+  486  cd .Rproj.user/
+  487  ll
+  488  cd E74EBCCB/
+  489  ll
+  490  cd ../
+  491  cd ../../
+  492  ll
+  493  cd GitHub/
+  494  cd Polly
+  495  ll
+  496  cd ../../MGTest
+  497  ll
+  498  rm -r .Rproj.user/
+  499  ./cleanup 
+  500  ll
+  501  rm .Rbuildignore 
+  502  rm .Rhistory 
+  503  ll
+  504  ./configure
+  505  cd ../
+  506  R CMD build MGTest
+  507  R
+  508  rm MGTest_0.1.0.tar.gz 
+  509  cd MGTest
+  510  ll
+  511  rm -r .Rproj.user/
+  512  ./cleanup 
+  513  ll
+  514  rm .Rbuildignore 
+  515  cd MG
+  516  ./cleanup 
+  517  autoconf
+  518  ./configure
+  519  cd ../
+  520  ll
+  521  R CMD build MGTest
+  522  R
+  523  cd /mnt/c/Users/knigh/Documents/MGTest
+  524  R
+  525  ll
+  526  R
+  527  cd ../
+  528  ll
+  529  R
+  530  cd GitHub/
+  531  cd Polly
+  532  ll
+  533  cd ../
+  534  ll
+  535  R
+  536  cd /mnt/c/Users/knigh/Documents/MGTest
+  537  cd ../
+  538  ll
+  539  R
+  540  cd /home/annabelperry/R/x86_64-pc-linux-gnu-library/3.6
+  541  ll
+  542  cd /mnt/c/Users/knigh/Documents/MGTest
+  543  R
+  544  cd /mnt/c/Users/knigh/Documents/MGTest
+  545  R
+  546  cd ../
+  547  R
+  548  cd /usr/lib/R
+  549  ll
+  550  cd /mnt/c/Program\ Files/R/R-4.0.5/library/
+  551  ll
+  552  cd /mnt/c/Users/knigh/Documents/
+  553  R
+  554  cd /mnt/c/Program\ Files/R/R-4.0.5/library/
+  555  ll
+  556  cd /mnt/c/Users/knigh/Documents/
+  557  R
+  558  cd /mnt/c/Program\ Files/R/R-4.0.5/library/
+  559  ll
+  560  cd /mnt/c/Users/knigh/Documents/
+  561  R
+  562  cd /mnt/c/Users/knigh/Documents/MGTest
+  563  ./cleanup 
+  564  ll
+  565  ./configure
+  566  autoconf
+  567  ./configure
+  568  cd ../
+  569  R CMD build MGTest_0.1.0.tar.gz 
+  570  l
+  571  ll
+  572  R CMD build MGTest/
+  573  R
+  574  cd /mnt/c/Users/knigh/Documents/GitHub/Polly
+  575  ./cleanup 
+  576  autoconf
+  577  ./configure
+  578  ../
+  579  cd ../
+  580  R CMD build Polly
+  581  R
+  582  cd /mnt/c/Users/knigh/OneDrive/Documents/R/win-library/4.1
+  583  ll
+  584  cd /mnt/c/Users/knigh/Documents/GitHub/
+  585  R CMD build Polly_
+  586  R CMD build Polly
+  587  R
+  588  cd /mnt/c/Users/knigh/Documents/GitHub/CaveCrawler/cavecrawler/data/
+  589  dos2unix CommunityData.csv 
+  590  cd /mnt/c/Users/knigh/Documents/GitHub/
+  591  R
+  592  cd /mnt/c/Users/knigh/Documents/GitHub/
+  593  R
+  594  sudo apt-get update
+  595  sudo apt-get install r-base
+  596  R --version
+  597  sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9
+  598  sudo add-apt-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu focal-cran40/'
+  599  sudo apt-get install r-base
+  600  R --version
+  601  ./cleanup
+  602  autoconf
+  603  ./configure
+  604  R CMD build Polly/
+  605  cd Polly
+  606  ./cleanup
+  607  autoconf
+  608  ./configure
+  609  R CMD build Polly/
+  610  cd ../
+  611  R CMD build Polly/
+  612  R
+  613  cd /mnt/c/Users/knigh/Documents/GitHub/
+  614  R
+  615  cd /home/annabelperry/R/x86_64-pc-linux-gnu-library/4.1
+  616  ll
+  617  rm -r 00LOCK-Rcpp/
+  618  rm -r Rcpp/
+  619  cd /Users/knight/Documents/GitHub
+  620  cd /c/mnt/Users/knight/Documents/GitHub
+  621  cd /mnt/c/Users/knight/Documents/GitHub
+  622  cd /mnt/c/Users/knigh/Documents/GitHub/
+  623  R
+  624  cd /mnt/c/Users/knigh/OneDrive/Documents/Spring\ 2022/Polly/Supplemental\ Materials/Polly_SupplementalMaterials/
+  625  tar -xzvf
+  626  tar -xzvf Polly_SupplementalMaterials/
+  627  cd Polly_SupplementalMaterials/
+  628  cd Input_Files/
+  629  tar -xzvf *
+  630  ll
+  631  gzip BirchmanniSRA.txt 
+  632  gzip Birchmanni_Lookup.csv 
+  633  gzip Birchmanni_Reference.fasta 
+  634  gzip birchmanni.frq 
+  635  cd ../
+  636  ll
+  637  cd ../
+  638  tar -zcvf Polly_SupplementalMaterials/
+  639  tar -zcvf Polly_SupplementalMaterials.tar.gz Polly_SupplementalMaterials/
+  640  ll
+  641  cp Polly_SupplementalMaterials.tar.gz ../
+  642  cd ../
+  643  ll
+  644  rm Polly_SupplementalMaterials.zip 
+  645  rm -r Polly_SupplementalMaterials
+  646  rm Polly_mini.bam
+  647  rm Polly_mini.bam.bai 
+  648  cd /mnt/c/Users/knigh/OneDrive/Documents/Spring\ 2022/ResearchApplications/Explorations/
+  649  gzip Figure\ 1\ Explorations.pptx 
+  650  cd /mnt/c/Users/knigh/Downloads/
+  651  cd ../OneDrive/Documents/Spring\ 2022/Interviews/Yale/
+  652  cd /mnt/c/Program Files/R/R-4.0.5/library
+  653  cd /mnt/c/Program\ Files/R/R-4.0.5/library
+  654  ll
+  655  cp * /mnt/c/Program\ Files/R/R-4.1.3/library
+  656  cp -r * /mnt/c/Program\ Files/R/R-4.1.3/library
+  657  chmod 0755 *
+  658  ll
+  659  cp -r * /mnt/c/Program\ Files/R/R-4.1.3/library
+  660  chmod 0755 -r *
+  661  cd ../
+  662  chmod 0755 library/
+  663  cd library/
+  664  ll
+  665  cp -r * /mnt/c/Program\ Files/R/R-4.1.3/library
+  666  sudo cp -r * /mnt/c/Program\ Files/R/R-4.1.3/library
+  667  whoami
+  668  lsattr
+  669  cd /mnt/c/Users/knigh/Documents/GitHub/achiasmy-sims/
+  670  cd troubleshooting/corners/
+  671  ll
+  672  cd ../empirical_mu/
+  673  history > test.txt

@@ -141,10 +141,10 @@ ActofGod <- function(pop, dfe, fus.type, mu, fus.large){
       
       # In case Heath asks why you are LOOPING through all mutated sites:
       # If you were to instead do this...
-      # pop[[i]][sample(1:2, size = 1), mut_sites[locus]]
+      # pop[[i]][sample(1:2, size = 1), locus
       # ...ALL mutations would be added to the SAME homolog (1 or 2)
       for(locus in which(mut_sites == 1)){
-        pop[[i]][sample(1:2, size = 1), mut_sites[locus]] <-
+        pop[[i]][sample(1:2, size = 1), locus] <-
           sample(dfe, size = 1)
       }
     }
@@ -160,8 +160,7 @@ ActofGod <- function(pop, dfe, fus.type, mu, fus.large){
   females <- unlist(lapply(pop, FUN=checker))
   
   # Each generation has 10% chance of having 1 individual with a fusion
-  # TODO change prob back to c(0.9,0.1)
-  fuse.bool <- sample(0:1, size = 1, prob = c(0,1))
+  fuse.bool <- sample(0:1, size = 1, prob = c(0.9,0.1))
   # If this is one of the generations with a fusion, randomly sample an 
   # applicable chromosome (X or Y) to which the fusion should be introduced
   if(fuse.bool){
@@ -259,8 +258,25 @@ MakeGametes <- function(pop, parents, chiasm = T){
       # ... at which recombination occurs (recombination CANNOT occur at first or
       # final locus of a chromosome, so these loci are excluded)
       SexRec <- sample(2:13, 1)
-      Chr1Rec <- sample(27:49, 1)
-      Chr2Rec <- sample(52:99, 1)
+      
+      # To ensure that recombinations between SDR and SAL have SAME probability 
+      # for both large and small chromosomes, make there be a 0.08 probability 
+      # of selecting a site to the left of the SAL and a 0.92 probability of 
+      # selecting a site to the right of the SAL for both chr1 (small) and chr2
+      # (large)
+      chr1.bool <- sample(1:0, size = 1, prob = c(0.08, 0.92))
+      if(chr1.bool){
+        Chr1Rec <- sample(27:28, 1)
+      }else{
+        Chr1Rec <- sample(29:49, 1)
+      }
+      
+      chr2.bool <- sample(1:0, size = 1, prob = c(0.08, 0.92))
+      if(chr2.bool){
+        Chr2Rec <- sample(52:55, 1)
+      }else{
+        Chr2Rec <- sample(56:99, 1)
+      }
       
       # For each chromosome, create two recombinant homologs and add to vectors
       # from which gametes will be selected
@@ -319,8 +335,24 @@ MakeGametes <- function(pop, parents, chiasm = T){
     # ... at which recombination occurs (recombination CANNOT occur at first or
     # final locus of a chromosome, so these loci are excluded)
     SexRec <- sample(2:24, 1)
-    Chr1Rec <- sample(27:49, 1)
-    Chr2Rec <- sample(52:99, 1)
+    # To ensure that recombinations between SDR and SAL have SAME probability 
+    # for both large and small chromosomes, make there be a 0.08 probability 
+    # of selecting a site to the left of the SAL and a 0.92 probability of 
+    # selecting a site to the right of the SAL for both chr1 (small) and chr2
+    # (large)
+    chr1.bool <- sample(1:0, size = 1, prob = c(0.08, 0.92))
+    if(chr1.bool){
+      Chr1Rec <- sample(27:28, 1)
+    }else{
+      Chr1Rec <- sample(29:49, 1)
+    }
+    
+    chr2.bool <- sample(1:0, size = 1, prob = c(0.08, 0.92))
+    if(chr2.bool){
+      Chr2Rec <- sample(52:55, 1)
+    }else{
+      Chr2Rec <- sample(56:99, 1)
+    }
     
     # For each chromosome, create two recombinant homologs and add to vectors
     # from which gametes will be selected
@@ -466,7 +498,6 @@ Evolve <- function(num_sims, pop_size, gen_no, s, chiasm, fus.type, mu, fus.larg
       pop <- MoL_output[[1]]
       total_chr <- MoL_output[[2]]
       total_fus <- MoL_output[[3]]
-      print(paste("Total Chromosomes: ", total_chr, " Total Fusions: ", total_fus), collapse = "")
       # Calculate and store frequency fusions at this generation. The functions
       # already account for the fact that the total number of chromosomes to
       # which a fusion could possibly occur (stored in total_chr) varies based

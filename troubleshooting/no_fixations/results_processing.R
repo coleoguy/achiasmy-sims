@@ -1,8 +1,6 @@
 library(viridisLite)
 library(ggplot2)
 
-setwd("/Users/knigh/Documents/GitHub/achiasmy-sims/annabel/")
-
 # Read in data from running simulations where...
 # 1. Males are chiasmatic
 # 2. Fusions can only occur between Y chromosomes and small (S) autosomes
