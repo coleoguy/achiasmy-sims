@@ -32,7 +32,7 @@
 # gen: number of generations to run
 # iter: number of trials to use
 # 
-
+library("parallel")
 library("doSNOW")
 library("foreach")
 
@@ -463,7 +463,6 @@ MiracleOfLife <- function(gametes, fus.type){
 #         T = fusions can occur only between sex and LARGE autosomes
 #         F = fusions can occur only between sex and SMALL autosomes
 Evolve <- function(pop_size, gen_no, s, chiasm, fus.type, mu, fus.large){
-  source("functions.R")
   # Get a new population
   pop <- GetPop(pop_size)
   

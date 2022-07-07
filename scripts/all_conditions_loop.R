@@ -6,7 +6,8 @@
 source("functions.R")
 
 # Create a cluster to run each simulation simultaneously
-sim_cluster <- makeCluster(spec = 100, type = "SOCK")
+nCores <- detectCores() - 1
+sim_cluster <- makeCluster(spec = nCores, type = "SOCK")
 registerDoSNOW(cl = sim_cluster)
 
 num_sims <- 2
@@ -54,14 +55,16 @@ for(cond in 1:num_conditions){
   # row = generation
   # column = simulation
   # cell = frequency of fusions
-  fusion_frequencies <- matrix
+  fusion_frequencies <- matrix(nrow = gen_no, ncol = num_sims)
   
   # Run sims in parallel and store the resulting fusion frequencies after each
   # generation as a column
   foreach(sim = 1:num_sims) %dopar% {
+    print(paste(c("Simulation: ", sim), collapse = ""))
     col <- Evolve(pop_size, gen_no, s, chiasm, fus.type, mu, fus.large)
-    fusion_frequencies[, sim] <- as.vector(col)
+    fusion_frequencies[, sim] <- col
   }
   
   saveRDS(fusion_frequencies, filename)
 }
+
