@@ -50,6 +50,7 @@ for(i in 2:ncol(CYS_8)){
 
 
 
+
 ###################################### CYS #####################################
 par(mfrow = c(1,3), cex = 0.6)
 CYS_10 <- readRDS("CYS_5e-10.rds")
@@ -81,6 +82,7 @@ plot(CYS_8[,1], type = "l", ylim=c(0,1),
 for(i in 2:ncol(CYS_8)){
   lines(y = CYS_8[,i], x = 1:nrow(CYS_8), col = col.vec[i])
 }
+
 
 ###################################### CXS #####################################
 CXS_10 <- readRDS("CXS_5e-10.rds")
@@ -123,6 +125,7 @@ for(i in 2:ncol(CXS_8)){
 
 
 
+
 ###################################### CYL #####################################
 CYL_10 <- readRDS("CYL_5e-10.rds")
 CYL_9 <- readRDS("CYL_5e-09.rds")
@@ -157,6 +160,7 @@ plot(CYL_8[,1], type = "l", ylim=c(0,1),
 for(i in 2:ncol(CYL_8)){
   lines(y = CYL_8[,i], x = 1:nrow(CYL_8), col = col.vec[i])
 }
+
 
 ###################################### CXL #####################################
 CXL_10 <- readRDS("CXL_5e-10.rds")
@@ -193,6 +197,7 @@ for(i in 2:ncol(CXL_8)){
   lines(y = CXL_8[,i], x = 1:nrow(CXL_8), col = col.vec[i])
 }
 
+
 ###################################### AYS #####################################
 AYS_10 <- readRDS("AYS_5e-10.rds")
 AYS_9 <- readRDS("AYS_5e-09.rds")
@@ -227,6 +232,7 @@ plot(AYS_8[,1], type = "l", ylim=c(0,1),
 for(i in 2:ncol(AYS_8)){
   lines(y = AYS_8[,i], x = 1:nrow(AYS_8), col = col.vec[i])
 }
+
 
 ###################################### AXS #####################################
 AXS_10 <- readRDS("AXS_5e-10.rds")
@@ -263,6 +269,7 @@ for(i in 2:ncol(AXS_8)){
   lines(y = AXS_8[,i], x = 1:nrow(AXS_8), col = col.vec[i])
 }
 
+
 ###################################### AYL #####################################
 AYL_10 <- readRDS("AYL_5e-10.rds")
 AYL_9 <- readRDS("AYL_5e-09.rds")
@@ -298,6 +305,7 @@ for(i in 2:ncol(AYL_8)){
   lines(y = AYL_8[,i], x = 1:nrow(AYL_8), col = col.vec[i])
 }
 
+
 ###################################### AXL #####################################
 AXL_10 <- readRDS("AXL_5e-10.rds")
 AXL_9 <- readRDS("AXL_5e-09.rds")
@@ -332,3 +340,5 @@ plot(AXL_8[,1], type = "l", ylim=c(0,1),
 for(i in 2:ncol(AXL_8)){
   lines(y = AXL_8[,i], x = 1:nrow(AXL_8), col = col.vec[i])
 }
+
+

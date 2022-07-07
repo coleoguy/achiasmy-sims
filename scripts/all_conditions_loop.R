@@ -5,7 +5,11 @@
 
 source("functions.R")
 
-num_sims <- 10
+# Create a cluster to run each simulation simultaneously
+sim_cluster <- makeCluster(spec = 100, type = "SOCK")
+registerDoSNOW(cl = sim_cluster)
+
+num_sims <- 2
 gen_no <- 1000
 pop_size <- 1000
 s <- 0
@@ -19,8 +23,10 @@ for(cond in 1:num_conditions){
   # Run first 4 sims chiasmatic and final four achiasmatic
   if(cond <= 4){
     chiasm <- T
+    meiotic_type <- "C"
   }else{
     chiasm <- F
+    meiotic_type <- "A"
   }
   
   # Every 2 runs, switch fusing from Y to X
@@ -33,26 +39,29 @@ for(cond in 1:num_conditions){
   # Every other run, switch from small to large
   if(cond%%2){
     fus.large <- F
+    size <- "S"
   }else{
     fus.large <- T
-  }
-  # Prep filename based on current parameters
-  if(chiasm){
-    meiotic_type <- "C"
-  }else{
-    meiotic_type <- "A"
-  }
-  if(fus.large){
     size <- "L"
-  }else{
-    size <- "S"
   }
+  
+  # Prep filename based on current parameters
   filename <- paste(c(meiotic_type, fus.type, size, "_", 
                       as.character(Sys.Date()), ".rds"), collapse = "")
   print(filename)
   
-  # Run sims
-  res <- Evolve(num_sims, pop_size, gen_no, s, chiasm, fus.type, mu, fus.large)
+  # Create matrix where...
+  # row = generation
+  # column = simulation
+  # cell = frequency of fusions
+  fusion_frequencies <- matrix
   
-  saveRDS(res, filename)
+  # Run sims in parallel and store the resulting fusion frequencies after each
+  # generation as a column
+  foreach(sim = 1:num_sims) %dopar% {
+    col <- Evolve(pop_size, gen_no, s, chiasm, fus.type, mu, fus.large)
+    fusion_frequencies[, sim] <- as.vector(col)
+  }
+  
+  saveRDS(fusion_frequencies, filename)
 }
