@@ -462,7 +462,7 @@ MiracleOfLife <- function(gametes, fus.type){
 # fus.large: 
 #         T = fusions can occur only between sex and LARGE autosomes
 #         F = fusions can occur only between sex and SMALL autosomes
-Evolve <- function(pop_size, gen_no, s, chiasm, fus.type, mu, fus.large){
+Evolve <- function(pop_size, gen_no, s, chiasm, fus.type, mu, fus.large, dfe){
   # Get a new population
   pop <- GetPop(pop_size)
   

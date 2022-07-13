@@ -6,14 +6,13 @@
 source("functions.R")
 
 #################### Create Cluster for Parallel Processing #################### 
-nCores <- detectCores() - 1
-sim_cluster <- makeCluster(spec = nCores, type = "SOCK")
+sim_cluster <- makeCluster(spec = 100, type = "SOCK")
 registerDoSNOW(cl = sim_cluster)
 
 ################################# Define Parameters ############################ 
-num_sims <- 2
-gen_no <- 5
-pop_size <- 100
+num_sims <- 1000
+gen_no <- 1000
+pop_size <- 1000
 # Selection coefficients ranging from 0 (negative control) to 1 (most extreme)
 s_coeffs <- (0:10)/10
 # Empirically-derived mutation rate for Drosophila
@@ -52,19 +51,22 @@ for(i in 1:length(s_coeffs)){
     }
     
     # Prep filename based on current parameters
-    filename <- paste(c(meiotic_type, fus.type, size, "_s=", s, "_", 
-                        as.character(Sys.Date()), ".rds"), collapse = "")
+    filename <- paste(c("../results/", meiotic_type, fus.type, size, "_s=", s, 
+                        "_", as.character(Sys.Date()), ".rds"), collapse = "")
     print(filename)
     
     # Create a list where each entry is a vector of frequencies for each 
     # generation of a simulation
     fusion_frequencies <- vector(mode = "list", length = num_sims)
     # Run sims in parallel
+    dfe <- GetDFE()
     fusion_frequencies <- foreach(sim = 1:num_sims) %dopar% {
       print(paste(c("Simulation: ", sim), collapse = ""))
-      Evolve(pop_size, gen_no, s, chiasm, fus.type, mu, fus.large)
+      Evolve(pop_size, gen_no, s, chiasm, fus.type, mu, fus.large, dfe)
     }
     
     saveRDS(fusion_frequencies, filename)
   }
 }
+
+stopCluster(sim_cluster)
