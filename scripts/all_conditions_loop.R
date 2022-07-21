@@ -12,34 +12,38 @@ registerDoSNOW(cl = sim_cluster)
 ################################# Define Parameters ############################ 
 num_sims <- 1000
 gen_no <- 1000
-pop_size <- 1000
+pop_size <- 1000     
 # Selection coefficients ranging from 0 (negative control) to 1 (most extreme)
-s_coeffs <- (0:10)/10
+s_coeffs <- (0:5)/5
 # Empirically-derived mutation rate for Drosophila
 mu <- 5e-9
 # There are 8 possible combinations of parameters because there are 2 values 
-# each for "chiasm", "fus.type", and "fus.size"
-num_conditions <- 8
+# each for "chiasm", "fus.type",  and "fus.size"source("functions.R")
+
+num_conditions <- 8 
 
 # Run with each possible combination of parameters. 
 for(i in 1:length(s_coeffs)){
   s <- s_coeffs[i]
-  for(cond in 1:num_conditions){
+  for(cond in 1:num_conditions){ 
+    time.start <- Sys.time()
     # Run first 4 sims chiasmatic and final four achiasmatic
     if(cond <= 4){
       chiasm <- T
       meiotic_type <- "C"
-    }else{
-      chiasm <- F
-      meiotic_type <- "A"
+    }else{source("functions.R")
+
+      chiasm <- F 
+      meiotic_type <- "A" 
     }
     
     # Every 2 runs, switch fusing from Y to X
     if(cond %in% c(1, 2, 5, 6)){
       fus.type <- "Y"
-    }else{
+    }else{ source("functions.R")
+
       fus.type <- "X"
-    }
+    } 
     
     # Every other run, switch from small to large
     if(cond%%2){
@@ -48,9 +52,9 @@ for(i in 1:length(s_coeffs)){
     }else{
       fus.large <- T
       size <- "L"
-    }
+    } 
     
-    # Prep filename based on current parameters
+    # Prep filename based on cu rren t parameters 
     filename <- paste(c("../results/", meiotic_type, fus.type, size, "_s=", s, 
                         "_", as.character(Sys.Date()), ".rds"), collapse = "")
     print(filename)
@@ -61,11 +65,11 @@ for(i in 1:length(s_coeffs)){
     # Run sims in parallel
     dfe <- GetDFE()
     fusion_frequencies <- foreach(sim = 1:num_sims) %dopar% {
-      print(paste(c("Simulation: ", sim), collapse = ""))
-      Evolve(pop_size, gen_no, s, chiasm, fus.type, mu, fus.large, dfe)
+      Evolve(pop_size, gen_no, s, chiasm, fus.type,  mu, fus.large, dfe)
     }
-    
     saveRDS(fusion_frequencies, filename)
+    time.elapsed <- Sys.time() - time.start
+    print(time.elapsed)
   }
 }
 
