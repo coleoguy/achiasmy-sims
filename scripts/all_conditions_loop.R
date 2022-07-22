@@ -54,7 +54,7 @@ for(i in 1:length(s_coeffs)){
       size <- "L"
     } 
     
-    # Prep filename based on cu rren t parameters 
+    # Prep filename based on current parameters 
     filename <- paste(c("../results/", meiotic_type, fus.type, size, "_s=", s, 
                         "_", as.character(Sys.Date()), ".rds"), collapse = "")
     print(filename)
