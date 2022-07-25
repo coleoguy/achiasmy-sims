@@ -14,7 +14,7 @@ num_sims <- 1000
 gen_no <- 1000
 pop_size <- 1000     
 # Selection coefficients ranging from 0 (negative control) to 1 (most extreme)
-s_coeffs <- (0:5)/5
+s_coeffs <- c(0.25,0.3,0.35)
 # Empirically-derived mutation rate for Drosophila
 mu <- 5e-9
 # There are 8 possible combinations of parameters because there are 2 values 
@@ -31,8 +31,7 @@ for(i in 1:length(s_coeffs)){
     if(cond <= 4){
       chiasm <- T
       meiotic_type <- "C"
-    }else{source("functions.R")
-
+    }else{
       chiasm <- F 
       meiotic_type <- "A" 
     }
@@ -40,8 +39,7 @@ for(i in 1:length(s_coeffs)){
     # Every 2 runs, switch fusing from Y to X
     if(cond %in% c(1, 2, 5, 6)){
       fus.type <- "Y"
-    }else{ source("functions.R")
-
+    }else{
       fus.type <- "X"
     } 
     
